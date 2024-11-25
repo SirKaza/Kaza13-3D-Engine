@@ -3,6 +3,7 @@
 #include<list>
 #include "Globals.h"
 #include "Module.h"
+#include <chrono>
 
 class ModuleOpenGL;
 class ModuleWindow;
@@ -35,6 +36,13 @@ public:
     ModuleDebugDraw* GetDebugDraw() { return debugDraw; }
     ModuleEditor* GetEditor() { return editor; }
 
+    float GetDeltaTime() {
+        auto now = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> deltaTime = now - lastTime;
+        lastTime = now;
+        return deltaTime.count(); 
+    }
+
 private:
 
     ModuleOpenGL* opengl = nullptr;
@@ -48,6 +56,7 @@ private:
 
     std::list<Module*> modules;
 
+    std::chrono::high_resolution_clock::time_point lastTime;
 };
 
 extern Application* App;

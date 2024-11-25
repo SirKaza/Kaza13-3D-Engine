@@ -39,6 +39,7 @@ Application::~Application()
 bool Application::Init()
 {
 	bool ret = true;
+	lastTime = std::chrono::high_resolution_clock::now();
 
 	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret; ++it)
 		ret = (*it)->Init();
@@ -49,6 +50,8 @@ bool Application::Init()
 update_status Application::Update()
 {
 	update_status ret = UPDATE_CONTINUE;
+
+	
 
 	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 		ret = (*it)->PreUpdate();

@@ -41,8 +41,6 @@ bool ModuleRender::Init()
 
 update_status ModuleRender::Update()
 {
-	startTime = std::chrono::steady_clock::now();
-
 	Frustum frustum = App->GetCamera()->getFrustum();
 
 	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),

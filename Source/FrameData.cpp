@@ -1,4 +1,5 @@
 #include "FrameData.h"
+#include "Application.h"
 #include <chrono>
 #include <stddef.h>
 #include <vector>
