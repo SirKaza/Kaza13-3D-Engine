@@ -7,8 +7,7 @@
 #include <chrono>
 #include "MathGeoLib.h"
 #include "Globals.h"
-
-float4x4 LookAt(const float3& eye, const float3& target, const float3& up);
+#include "ModuleCamera.h"
 
 ModuleRender::ModuleRender() : vbo(0), program_id(0)
 {}
@@ -44,30 +43,23 @@ update_status ModuleRender::Update()
 {
 	startTime = std::chrono::steady_clock::now();
 
-	float aspect = (float)App->GetWindow()->screen_surface->w / App->GetWindow()->screen_surface->h;
-
-	frustum.type = FrustumType::PerspectiveFrustum;
-	frustum.pos = float3(0.0f, 0.0f, -8.0f);
-	frustum.front = -float3::unitZ;
-	frustum.up = float3::unitY;
-
-	frustum.nearPlaneDistance = 0.1f;
-	frustum.farPlaneDistance = 100.0f;
-	frustum.verticalFov = math::pi / 4.0f;
-	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * aspect);
+	Frustum frustum = App->GetCamera()->getFrustum();
 
 	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),
 		float4x4::RotateZ(pi / 4.0f),
 		float3(2.0f, 1.0f, 1.0f));
 	
 	float3 target = model.TranslatePart();
-	
 	float3 targetPos(0.0f, 0.0f, 0.0f);
-	view = LookAt(frustum.pos, targetPos, frustum.up); // cameraMatrix
-	float4x4 rotationZ = float4x4::RotateX(-pi / 6.0f); // 30 degrees
-	view = view * rotationZ; // Aplicar la rotación a la matriz de vista
+
+	view = App->GetCamera()->LookAt(frustum.pos, targetPos, frustum.up); // cameraMatrix
+	float4x4 rotationZ = float4x4::RotateX(-pi / 6.0f); // rotate X 30 degrees
+	view = view * rotationZ; 
 
 	proj = frustum.ProjectionMatrix();
+
+	//view = App->GetCamera()->getViewMatrix();
+	//proj = App->GetCamera()->getProjectionMatrix();
 
 	// Pass MVP as uniform to Vertex shader
 	glUseProgram(program_id);
@@ -95,23 +87,4 @@ bool ModuleRender::CleanUp()
 	glDeleteBuffers(1, &vbo);
 
 	return true;
-}
-
-float4x4 LookAt(const float3& eye, const float3& target, const float3& up)
-{
-	float3 forward = (target - eye).Normalized();
-
-	float3 right = up.Cross(forward).Normalized();  // Right direction
-
-	float3 up_corrected = forward.Cross(right).Normalized();
-
-	float3 position = eye;
-
-	float4x4 cameraMatrix;
-	cameraMatrix.SetCol(0, float4(right, 0.0f));
-	cameraMatrix.SetCol(1, float4(up_corrected, 0.0f));
-	cameraMatrix.SetCol(2, float4(-forward, 0.0f));
-	cameraMatrix.SetCol(3, float4(position, 1.0f));
-
-	return cameraMatrix;
 }

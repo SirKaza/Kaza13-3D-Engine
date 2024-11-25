@@ -9,6 +9,7 @@ class ModuleWindow;
 class ModuleTextures;
 class ModuleInput;
 class ModuleProgram;
+class ModuleCamera;
 class ModuleRender;
 class ModuleDebugDraw;
 class ModuleEditor;
@@ -29,6 +30,7 @@ public:
     ModuleWindow* GetWindow() { return window; }
     ModuleInput*  GetInput() { return input; }
     ModuleProgram* GetProgram() { return program; }
+    ModuleCamera* GetCamera() { return camera; }
     ModuleRender* GetRender() { return render; }
     ModuleDebugDraw* GetDebugDraw() { return debugDraw; }
     ModuleEditor* GetEditor() { return editor; }
@@ -39,6 +41,7 @@ private:
     ModuleWindow* window = nullptr;
     ModuleInput* input = nullptr;
     ModuleProgram* program = nullptr;
+    ModuleCamera* camera = nullptr;
     ModuleRender* render = nullptr;
     ModuleDebugDraw* debugDraw = nullptr;
     ModuleEditor* editor = nullptr;

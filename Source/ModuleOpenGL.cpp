@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "ModuleOpenGL.h"
 #include "ModuleWindow.h"
+#include "ModuleCamera.h"
 #include "SDL.h"
 #include <GL/glew.h>
 
@@ -132,12 +133,17 @@ bool ModuleOpenGL::CleanUp()
 void ModuleOpenGL::WindowResized(unsigned width, unsigned height, unsigned windowID)
 {
 	SDL_Window* window = SDL_GetWindowFromID(windowID);
-	if (window != nullptr) 
+	if (window != nullptr)
 	{
 		SDL_Surface* screen_surface = SDL_GetWindowSurface(window);
 		if (windowID == SDL_GetWindowID(App->GetWindow()->window)) // main window
+		{
 			
+			App->GetCamera()->setAspectRatio(App->GetCamera()->getAspectRatio());
 			glViewport(0, 0, width, height);
+			ENGINE_LOG("Window Resized to %dx%d", width, height);
+		}
+			
 	}
 	else 
 	{

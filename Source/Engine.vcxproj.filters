@@ -4,9 +4,6 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ModuleRender.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
     <ClCompile Include="ImGui\imgui.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
@@ -148,6 +145,12 @@
     <ClCompile Include="ModuleDebugDraw.cpp">
       <Filter>Modules\DebugDraw</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleRender.cpp">
+      <Filter>Modules\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleCamera.cpp">
+      <Filter>Modules\Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -156,9 +159,6 @@
       <Filter>Modules</Filter>
     </ClInclude>
     <ClInclude Include="Module.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleRender.h">
       <Filter>Modules</Filter>
     </ClInclude>
     <ClInclude Include="ImGui\imconfig.h">
@@ -410,6 +410,12 @@
     <ClInclude Include="ModuleDebugDraw.h">
       <Filter>Modules\DebugDraw</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleRender.h">
+      <Filter>Modules\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleCamera.h">
+      <Filter>Modules\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Modules">
@@ -450,6 +456,12 @@
     </Filter>
     <Filter Include="Modules\DebugDraw">
       <UniqueIdentifier>{e4a3b140-167b-40ba-8de7-dddda9885759}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Render">
+      <UniqueIdentifier>{a57d597e-7765-4042-8e53-931d2df50735}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Camera">
+      <UniqueIdentifier>{9da94010-47b7-436d-a89d-45af0205cbb2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
