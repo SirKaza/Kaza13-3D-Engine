@@ -15,7 +15,6 @@ class ModuleRender;
 class ModuleDebugDraw;
 class ModuleEditor;
 
-
 class Application
 {
 public:

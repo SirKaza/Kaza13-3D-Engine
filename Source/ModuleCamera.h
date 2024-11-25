@@ -1,6 +1,8 @@
 #pragma once
 #include "Module.h"
-#include "MathGeoLib.h"
+#include "Math/float3.h"
+#include "Math/float4x4.h"
+#include "Geometry/Frustum.h"
 
 class ModuleCamera : public Module
 {

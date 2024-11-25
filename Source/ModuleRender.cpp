@@ -1,13 +1,18 @@
 #include "ModuleRender.h"
-#include <GL/glew.h>
-#include "ModuleProgram.h"
 #include "Application.h"
+#include "ModuleProgram.h"
 #include "ModuleWindow.h"
-#include "FrameData.h"
-#include <chrono>
-#include "MathGeoLib.h"
-#include "Globals.h"
 #include "ModuleCamera.h"
+#include "Globals.h"
+#include "FrameData.h"
+#include "Math/float3.h"
+#include "Math/float4x4.h"
+#include "Geometry/Frustum.h"
+#include "Math/MathNamespace.h" // math::pi
+#include "Math/MathConstants.h"
+#include <chrono>
+#include <GL/glew.h>
+
 
 ModuleRender::ModuleRender() : vbo(0), program_id(0)
 {}
@@ -18,7 +23,11 @@ ModuleRender::~ModuleRender()
 bool ModuleRender::Init()
 {
 	//float vtx_data[] = { -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
-	float vtx_data[] = { -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
+	float vtx_data[] = {	
+		-1.0f, -1.0f, 0.0f, 
+		1.0f, -1.0f, 0.0f, 
+		0.0f, 1.0f, 0.0f 
+	};
 	
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo); // set vbo active
@@ -43,20 +52,24 @@ update_status ModuleRender::Update()
 {
 	Frustum frustum = App->GetCamera()->getFrustum();
 
-	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),
+	model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),
 		float4x4::RotateZ(pi / 4.0f),
 		float3(2.0f, 1.0f, 1.0f));
 	
 	float3 target = model.TranslatePart();
 	float3 targetPos(0.0f, 0.0f, 0.0f);
 
-	view = App->GetCamera()->LookAt(frustum.pos, targetPos, frustum.up); // cameraMatrix
-	float4x4 rotationZ = float4x4::RotateX(-pi / 6.0f); // rotate X 30 degrees
+	view = App->GetCamera()->LookAt(frustum.pos, frustum.front, frustum.up); // cameraMatrix
+	float4x4 view2 = frustum.ViewMatrix();
+	view.InverseOrthonormal();
+	float4x4 rotationZ = float4x4::RotateX(pi / 6.0f); // rotate X 30 degrees
 	view = view * rotationZ; 
+
+	
 
 	proj = frustum.ProjectionMatrix();
 
-	//view = App->GetCamera()->getViewMatrix();
+	
 	//proj = App->GetCamera()->getProjectionMatrix();
 
 	// Pass MVP as uniform to Vertex shader

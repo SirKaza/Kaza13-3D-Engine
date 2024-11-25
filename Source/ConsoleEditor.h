@@ -27,7 +27,6 @@
 #endif
 
 #include <imgui.h>
-#include <vector>
 #include "Globals.h"
 
 struct ConsoleEditor {

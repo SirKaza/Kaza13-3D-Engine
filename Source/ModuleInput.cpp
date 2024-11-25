@@ -66,11 +66,11 @@ update_status ModuleInput::Update()
         float3 moveDirection = frustum.up.Normalized();  // normalize to evade irregular movements
         if (keyboard[SDL_SCANCODE_Q])
         {
-            newPos = frustum.pos - moveDirection * speed * deltaTime;
+            newPos = frustum.pos + moveDirection * speed * deltaTime;
         }
         else if (keyboard[SDL_SCANCODE_E])
         {
-            newPos = frustum.pos + moveDirection * speed * deltaTime;
+            newPos = frustum.pos - moveDirection * speed * deltaTime;
         }
         camera->setPosition(newPos);
         moved = true;
