@@ -613,6 +613,15 @@ bool ModuleDebugDraw::CleanUp()
 update_status  ModuleDebugDraw::Update()
 {
     dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
+    //dd::line(float3::zero, float3::unitX, dd::colors::Red);
+    //dd::line(float3::zero, float3::unitY, dd::colors::Green);
+    //dd::line(float3::zero, float3::unitZ, dd::colors::Blue);
+    //float4x4 vpMatrix = App->GetRender()->getView() * App->GetRender()->getProj();
+    //int w = App->GetWindow()->screen_surface->w;
+    //int h = App->GetWindow()->screen_surface->h;
+    //dd::projectedText("X", float3(1.0f, 1.0f, 1.0f), dd::colors::Red, vpMatrix, 0, 0, w, h);
+    //dd::projectedText("Y", float3(1.0f, 1.0f, 1.0f), dd::colors::Green, vpMatrix, 0, 0, w, h);
+    //dd::projectedText("Z", float3(1.0f, 1.0f, 1.0f), dd::colors::Blue, vpMatrix, 0, 0, w, h);
     dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, dd::colors::Gray);
 
     Draw(App->GetRender()->getView(), App->GetRender()->getProj(), App->GetWindow()->screen_surface->w, App->GetWindow()->screen_surface->h);
