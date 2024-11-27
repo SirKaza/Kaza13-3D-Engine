@@ -13,7 +13,6 @@
 #include <chrono>
 #include <GL/glew.h>
 
-
 ModuleRender::ModuleRender() : vbo(0), program_id(0)
 {}
 

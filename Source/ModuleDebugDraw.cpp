@@ -612,7 +612,6 @@ bool ModuleDebugDraw::CleanUp()
 
 update_status  ModuleDebugDraw::Update()
 {
-    //dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
     float4x4 view = App->GetCamera()->getViewMatrixInverted();
     float4x4 proj = App->GetCamera()->getProjectionMatrix();
     float4x4 vpMatrix = proj * view;
