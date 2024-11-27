@@ -27,8 +27,8 @@ bool ModuleCamera::Init()
 
 	frustum.nearPlaneDistance = 0.1f;
 	frustum.farPlaneDistance = 100.0f;
-	frustum.verticalFov = math::pi / 4.0f;
 
+	frustum.verticalFov = math::pi / 4.0f;
 	App->GetCamera()->setAspectRatio(getAspectRatio());
 
 	return true;
