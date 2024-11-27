@@ -56,21 +56,13 @@ update_status ModuleRender::Update()
 		float4x4::RotateZ(pi / 4.0f),
 		float3(2.0f, 1.0f, 1.0f));
 	
-	float3 target = model.TranslatePart();
-	float3 targetPos(0.0f, 0.0f, 0.0f);
+	//float3 target = model.TranslatePart();
+	//float3 targetPos(0.0f, 0.0f, 0.0f);
 
-	view = App->GetCamera()->LookAt(frustum.pos, frustum.front, frustum.up); // cameraMatrix
-	float4x4 view2 = frustum.ViewMatrix();
-	view.InverseOrthonormal();
-	float4x4 rotationZ = float4x4::RotateX(pi / 6.0f); // rotate X 30 degrees
-	view = view * rotationZ; 
+	App->GetCamera()->LookAt(frustum.pos, frustum.front, frustum.up);
+	float4x4 view = App->GetCamera()->getViewMatrixInverted();
 
-	
-
-	proj = frustum.ProjectionMatrix();
-
-	
-	//proj = App->GetCamera()->getProjectionMatrix();
+	float4x4 proj = App->GetCamera()->getProjectionMatrix();
 
 	// Pass MVP as uniform to Vertex shader
 	glUseProgram(program_id);

@@ -28,12 +28,14 @@ public:
 	}
 	std::pair<float3, float3> getOrientation() const{ return {frustum.front, frustum.up}; }
 
-	float4x4 LookAt(const float3& eye, const float3& target, const float3& up);
+	void LookAt(const float3& eye, const float3& target, const float3& up);
 
-	float4x4 getProjectionMatrix() const;
-	float4x4 getViewMatrix() const;
+	float4x4 getProjectionMatrix() const { return frustum.ProjectionMatrix(); }
+	float4x4 getViewMatrix() const { return view; }
+	float4x4 getViewMatrixInverted() const { return view.Inverted(); }
 
 private:
 	Frustum frustum;
+	float4x4 view, proj;
 };
 

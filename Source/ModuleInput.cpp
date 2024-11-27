@@ -110,7 +110,6 @@ update_status ModuleInput::Update()
     }
     
 
-
     if (moved) {
         ENGINE_LOG("New camera position: (%.2f, %.2f, %.2f)", frustum.pos.x, frustum.pos.y, frustum.pos.z);
         ENGINE_LOG("Front: (%.2f, %.2f, %.2f)", frustum.front.x, frustum.front.y, frustum.front.z);
