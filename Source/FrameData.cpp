@@ -21,8 +21,8 @@ void UpdateFrameData() {
 
     if (maxFPS > 0) {
         if (delta.count() < target_frame_time) {
-            float wait_time = target_frame_time - delta.count();
-            std::this_thread::sleep_for(std::chrono::milliseconds((int)(target_frame_time - delta.count())));
+            double wait_time = target_frame_time - delta.count();
+            std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((target_frame_time - delta.count()))));
             endTime = std::chrono::steady_clock::now();
             delta = endTime - startTime;
         }
@@ -30,8 +30,8 @@ void UpdateFrameData() {
 
     startTime = endTime;
 
-    float frame_time = delta.count();
-    float fps = 1000.0f / frame_time; // Calculate FPS
+    float frame_time = static_cast<float>(delta.count());
+    float fps =  1000.0f / frame_time; // Calculate FPS
     float ms = frame_time;
 
     // Add FPS & MS to LOG

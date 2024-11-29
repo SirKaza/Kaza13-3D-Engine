@@ -35,6 +35,10 @@
 #include <QMatrix4x4>
 #endif
 
+#ifdef _MSC_VER
+#pragma warning (disable: 26495)
+#endif
+
 MATH_BEGIN_NAMESPACE
 
 /// A 4-by-4 matrix for affine transformations and perspective projections of 3D geometry.

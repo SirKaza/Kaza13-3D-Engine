@@ -41,6 +41,10 @@
 #include "../../../Bullet/include/LinearMath/btVector3.h"
 #endif
 
+#ifdef _MSC_VER
+#pragma warning (disable: 26495)
+#endif
+
 MATH_BEGIN_NAMESPACE
 
 /// A vector of form (x,y,z).

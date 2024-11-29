@@ -18,8 +18,8 @@ Application::Application()
 	modules.push_back(opengl = new ModuleOpenGL());
 	modules.push_back(input = new ModuleInput());
 	modules.push_back(program = new ModuleProgram());
-	modules.push_back(camera = new ModuleCamera());
 	modules.push_back(render = new ModuleRender());
+	modules.push_back(camera = new ModuleCamera());
 #ifdef _DEBUG
 	modules.push_back(debugDraw = new ModuleDebugDraw());
 #endif
@@ -39,7 +39,7 @@ Application::~Application()
 bool Application::Init()
 {
 	bool ret = true;
-	lastTime = std::chrono::high_resolution_clock::now();
+	lastTime = std::chrono::high_resolution_clock::now(); // set time between frames
 
 	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret; ++it)
 		ret = (*it)->Init();
@@ -50,8 +50,6 @@ bool Application::Init()
 update_status Application::Update()
 {
 	update_status ret = UPDATE_CONTINUE;
-
-	
 
 	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 		ret = (*it)->PreUpdate();

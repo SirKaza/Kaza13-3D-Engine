@@ -35,6 +35,10 @@
 #include "../../../Bullet/include/LinearMath/btMatrix3x3.h"
 #endif
 
+#ifdef _MSC_VER
+#pragma warning (disable: 26495)
+#endif
+
 MATH_BEGIN_NAMESPACE
 
 /// A 3-by-3 matrix for linear transformations of 3D geometry.

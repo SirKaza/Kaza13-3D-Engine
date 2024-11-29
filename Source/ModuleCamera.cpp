@@ -1,6 +1,7 @@
 #include "ModuleCamera.h"
 #include "Application.h"
 #include "ModuleWindow.h"
+#include "ModuleInput.h"
 #include "Math/MathNamespace.h"
 #include "Math/MathConstants.h"
 #include "Math/float4.h"
@@ -36,6 +37,68 @@ bool ModuleCamera::Init()
 
 update_status ModuleCamera::Update()
 {
+    const Uint8* keyboard = App->GetInput()->getKeyboard();
+    float speed = 3.0f;
+    if (keyboard[SDL_SCANCODE_LSHIFT])
+        speed *= 3;
+    bool moved = false;
+    float3 newPos;
+    float deltaTime = App->GetDeltaTime();
+
+    //keyboard combinations sum up?
+
+    if ((keyboard[SDL_SCANCODE_Q] || keyboard[SDL_SCANCODE_E]) && !(keyboard[SDL_SCANCODE_Q] && keyboard[SDL_SCANCODE_E])) // Q up E down
+    {
+        float3 moveDirection = frustum.up.Normalized();  // normalize to evade irregular movements
+        if (keyboard[SDL_SCANCODE_Q])
+        {
+            newPos = frustum.pos + moveDirection * speed * deltaTime;
+        }
+        else if (keyboard[SDL_SCANCODE_E])
+        {
+            newPos = frustum.pos - moveDirection * speed * deltaTime;
+        }
+        setPosition(newPos);
+        moved = true;
+    }
+
+    if ((keyboard[SDL_SCANCODE_W] || keyboard[SDL_SCANCODE_S]) && !(keyboard[SDL_SCANCODE_W] && keyboard[SDL_SCANCODE_S])) // W forward S backwards
+    {
+        float3 moveDirection = frustum.front.Normalized();  // normalize to evade irregular movements
+
+        if (keyboard[SDL_SCANCODE_W])
+        {
+            newPos = frustum.pos + moveDirection * speed * deltaTime;
+
+        }
+        else if (keyboard[SDL_SCANCODE_S])
+        {
+            newPos = frustum.pos - moveDirection * speed * deltaTime;
+        }
+        setPosition(newPos);
+        moved = true;
+    }
+
+    if ((keyboard[SDL_SCANCODE_A] || keyboard[SDL_SCANCODE_D]) && !(keyboard[SDL_SCANCODE_A] && keyboard[SDL_SCANCODE_D])) // A left D right
+    {
+        float3 moveDirection = frustum.WorldRight().Normalized();  // normalize to evade irregular movements
+
+        if (keyboard[SDL_SCANCODE_A])
+        {
+            newPos = frustum.pos - moveDirection * speed * deltaTime;
+        }
+        else if (keyboard[SDL_SCANCODE_D])
+        {
+            newPos = frustum.pos + moveDirection * speed * deltaTime;
+        }
+        setPosition(newPos);
+        moved = true;
+    }
+
+    if (moved) {
+        ENGINE_LOG("Camera Pos: (%.2f, %.2f, %.2f)/ Front: (%.2f, %.2f, %.2f)/ Up: (%.2f, %.2f, %.2f)", frustum.pos.x, frustum.pos.y, frustum.pos.z, 
+            frustum.front.x, frustum.front.y, frustum.front.z, frustum.up.x, frustum.up.y, frustum.up.z);
+    }
 
 	return UPDATE_CONTINUE;
 }

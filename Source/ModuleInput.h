@@ -15,6 +15,8 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	const Uint8* getKeyboard() const { return keyboard; }
+
 private:
 	const Uint8 *keyboard = NULL;
 };

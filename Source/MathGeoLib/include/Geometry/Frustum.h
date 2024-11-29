@@ -35,6 +35,10 @@ enum FrustumType
 	PerspectiveFrustum
 };
 
+#ifdef _MSC_VER
+#pragma warning (disable: 26495)
+#endif
+
 /// Represents either an orthographic or a perspective viewing frustum.
 class Frustum
 {

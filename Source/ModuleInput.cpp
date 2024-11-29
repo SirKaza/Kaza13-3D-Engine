@@ -49,72 +49,7 @@ update_status ModuleInput::Update()
         }
     }
 
-    keyboard = SDL_GetKeyboardState(NULL);
-    float speed = 2.0f;
-    if (keyboard[SDL_SCANCODE_LSHIFT])
-        speed *= 3;
-    bool moved = false;
-    float3 newPos;
-    ModuleCamera* camera = App->GetCamera();
-    Frustum frustum = camera->getFrustum();
-    float deltaTime = App->GetDeltaTime();
-
-    //keyboard combinations sum up?
-
-    if ((keyboard[SDL_SCANCODE_Q] || keyboard[SDL_SCANCODE_E]) && !(keyboard[SDL_SCANCODE_Q] && keyboard[SDL_SCANCODE_E])) // Q up E down
-    {
-        float3 moveDirection = frustum.up.Normalized();  // normalize to evade irregular movements
-        if (keyboard[SDL_SCANCODE_Q])
-        {
-            newPos = frustum.pos + moveDirection * speed * deltaTime;
-        }
-        else if (keyboard[SDL_SCANCODE_E])
-        {
-            newPos = frustum.pos - moveDirection * speed * deltaTime;
-        }
-        camera->setPosition(newPos);
-        moved = true;
-    }
-
-    if ((keyboard[SDL_SCANCODE_W] || keyboard[SDL_SCANCODE_S]) && !(keyboard[SDL_SCANCODE_W] && keyboard[SDL_SCANCODE_S])) // W forward S backwards
-    {
-        float3 moveDirection = frustum.front.Normalized();  // normalize to evade irregular movements
-
-        if (keyboard[SDL_SCANCODE_W]) 
-        {
-            newPos = frustum.pos + moveDirection * speed * deltaTime;
-            
-        }
-        else if (keyboard[SDL_SCANCODE_S]) 
-        {
-            newPos = frustum.pos - moveDirection * speed * deltaTime;
-        }
-        camera->setPosition(newPos);
-        moved = true;
-    }
-
-    if ((keyboard[SDL_SCANCODE_A] || keyboard[SDL_SCANCODE_D]) && !(keyboard[SDL_SCANCODE_A] && keyboard[SDL_SCANCODE_D])) // A left D right
-    {
-        float3 moveDirection = frustum.WorldRight().Normalized();  // normalize to evade irregular movements
-
-        if (keyboard[SDL_SCANCODE_A]) 
-        {
-            newPos = frustum.pos - moveDirection * speed * deltaTime;
-        }
-        else if (keyboard[SDL_SCANCODE_D]) 
-        {
-            newPos = frustum.pos + moveDirection * speed * deltaTime;
-        }
-        camera->setPosition(newPos);
-        moved = true;
-    }
-    
-
-    if (moved) {
-        ENGINE_LOG("New camera position: (%.2f, %.2f, %.2f)", frustum.pos.x, frustum.pos.y, frustum.pos.z);
-        ENGINE_LOG("Front: (%.2f, %.2f, %.2f)", frustum.front.x, frustum.front.y, frustum.front.z);
-        ENGINE_LOG("Up: (%.2f, %.2f, %.2f)", frustum.up.x, frustum.up.y, frustum.up.z);
-    }
+    keyboard = SDL_GetKeyboardState(NULL); // should not be freed by the caller. SDL manages
 
     return UPDATE_CONTINUE;
 }

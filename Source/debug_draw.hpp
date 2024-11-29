@@ -309,6 +309,10 @@
     #define DEBUG_DRAW_STRING_TYPE_DEFINED 1
 #endif // DEBUG_DRAW_STRING_TYPE_DEFINED
 
+#ifdef _MSC_VER
+#pragma warning (disable: 26495)
+#endif
+
 namespace dd
 {
 
