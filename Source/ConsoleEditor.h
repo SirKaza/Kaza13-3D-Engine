@@ -29,7 +29,8 @@
 #include <imgui.h>
 #include "Globals.h"
 
-struct ConsoleEditor {
+class ConsoleEditor {
+private:
     char                  InputBuf[256];
     ImVector<char*>       Items;
     ImVector<const char*> Commands;
@@ -39,6 +40,7 @@ struct ConsoleEditor {
     bool                  AutoScroll;
     bool                  ScrollToBottom;
 
+public:
     // Constructor
     ConsoleEditor()
     {
@@ -406,5 +408,3 @@ struct ConsoleEditor {
         return 0;
     }
 };
-
-extern ConsoleEditor myConsole;

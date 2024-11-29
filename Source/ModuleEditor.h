@@ -4,6 +4,7 @@
 
 // Forward declaration
 struct ImGuiContext;
+class EditorMenu;
 
 class ModuleEditor : public Module
 {
@@ -18,9 +19,10 @@ public:
 	bool CleanUp();
 
 	ImGuiContext* getContext() const { return context; }
+	EditorMenu* getEditorMenu() const { return menu; }
 
 private:
 	ImGuiContext* context;
-	
+	EditorMenu* menu;
 };
 

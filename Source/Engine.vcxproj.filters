@@ -151,6 +151,9 @@
     <ClCompile Include="ModuleCamera.cpp">
       <Filter>Modules\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="EditorMenu.cpp">
+      <Filter>Modules\Editor\MyMenuEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -204,9 +207,6 @@
       <Filter>Modules\Program</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleEditor.h">
-      <Filter>Modules\Editor\MyMenuEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuEditor.h">
       <Filter>Modules\Editor\MyMenuEditor</Filter>
     </ClInclude>
     <ClInclude Include="LogEditor.h">
@@ -415,6 +415,9 @@
     </ClInclude>
     <ClInclude Include="ModuleCamera.h">
       <Filter>Modules\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorMenu.h">
+      <Filter>Modules\Editor\MyMenuEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

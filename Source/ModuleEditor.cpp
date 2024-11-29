@@ -4,7 +4,7 @@
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
-#include "MenuEditor.h"
+#include "EditorMenu.h"
 
 ModuleEditor::ModuleEditor() : context(nullptr)
 {}
@@ -19,9 +19,8 @@ bool ModuleEditor::Init()
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    //io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
-    // fix multi-viewport problem
 
     ImGui::StyleColorsDark();
 
@@ -50,9 +49,7 @@ update_status ModuleEditor::PreUpdate()
 
 update_status ModuleEditor::Update()
 {
-    // fix docking resize window problem
-
-    ShowMenuEditor();
+    menu->Draw();
 
     //ImGui::ShowDemoWindow();
 

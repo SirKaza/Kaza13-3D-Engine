@@ -1,13 +1,15 @@
 #pragma once
 #include <imgui.h>
 
-struct LogEditor
+class LogEditor
 {
+private:
     ImGuiTextBuffer     Buf;
     ImGuiTextFilter     Filter;
     ImVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
     bool                AutoScroll;  // Keep scrolling if already at the bottom.
 
+public:
     LogEditor()
     {
         AutoScroll = true;
@@ -123,5 +125,3 @@ struct LogEditor
         ImGui::End();
     }
 };
-
-extern LogEditor myLog;
