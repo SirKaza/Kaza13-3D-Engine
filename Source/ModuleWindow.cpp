@@ -56,7 +56,7 @@ bool ModuleWindow::Init()
 				initWindowFlags.vsync = true;
 			}
 
-			SDL_GetCurrentDisplayMode(1, &displayMode);
+			SDL_GetCurrentDisplayMode(0, &displayMode);
 		}
 	}
 
@@ -81,8 +81,10 @@ bool ModuleWindow::CleanUp()
 
 void ModuleWindow::setFullscreen(bool fullscreen)
 {
-	if (fullscreen) 
+	if (fullscreen) {
+		SDL_SetWindowDisplayMode(window, &displayMode);
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+	}
 	else {
 		SDL_SetWindowFullscreen(window, 0);
 		screen_surface = SDL_GetWindowSurface(window);
@@ -104,9 +106,7 @@ void ModuleWindow::setResizable(bool resizable)
 
 void ModuleWindow::setFullDesktop(bool fullDesktop)
 {
-	if (fullDesktop) {
-		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	}
+	if (fullDesktop) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	else {
 		SDL_SetWindowFullscreen(window, 0);
 		screen_surface = SDL_GetWindowSurface(window);
@@ -118,9 +118,4 @@ void ModuleWindow::setVsync(bool vsync)
 {
 	if (vsync) SDL_GL_SetSwapInterval(1);
 	else SDL_GL_SetSwapInterval(0);
-}
-
-int ModuleWindow::getRefreshRate()
-{
-	return displayMode.refresh_rate;
 }

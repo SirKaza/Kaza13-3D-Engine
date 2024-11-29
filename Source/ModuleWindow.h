@@ -27,7 +27,9 @@ public:
 	void setResizable(bool resizable);
 	void setFullDesktop(bool fullDesktop);
 	void setVsync(bool vsync);
-	int getRefreshRate();
+	int getRefreshRate() const { return displayMode.refresh_rate; }
+	int getDisplayW() const { return displayMode.w; }
+	int getDisplayH() const { return displayMode.h; }
 	WindowFlags getInitWindowFlags() const { return initWindowFlags; }
 
 public:

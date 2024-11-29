@@ -78,12 +78,12 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
 
         // FPS Slider
         static int slider_FPS = 0;
+        ImGui::SliderInt("Max FPS", &slider_FPS, 0, refreshRate, "%d", flags_for_sliders);
         if (slider_FPS == 0) {
             if (windowFlags.vsync) maxFPS = refreshRate;
             else maxFPS = 0;
         }
         else maxFPS = slider_FPS;
-        ImGui::SliderInt("Max FPS", &slider_FPS, 0, refreshRate, "%d", flags_for_sliders);
 
         ImGui::Text("Limit Framerate: ");
         ImGui::SameLine();
@@ -94,21 +94,27 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
 
         // FPS & MS graph
         char title[25]; // Title text
+        float maxYAxis;
+        if (!windowFlags.vsync && slider_FPS == 0) maxYAxis = 500 * 1.66f;
+        else maxYAxis = maxFPS * 1.66f;
         sprintf_s(title, sizeof(title), "Framerate %.1f", fps_log[fps_log.size() - 1]);
-        ImGui::PlotHistogram("##framerate", &fps_log[0], (int)fps_log.size(), 0, title, 0.0f, maxFPS + 40.0f, ImVec2(310, 100));
+        ImGui::PlotHistogram("##framerate", &fps_log[0], (int)fps_log.size(), 0, title, 0.0f, maxYAxis, ImVec2(310, 100));
         sprintf_s(title, sizeof(title), "Milliseconds %0.1f", ms_log[ms_log.size() - 1]);
         ImGui::PlotHistogram("##milliseconds", &ms_log[0], (int)ms_log.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
     }
 
     if (ImGui::CollapsingHeader("Window"))
     {
+        // Bright, width and height
+        ModuleWindow* windowModule = App->GetWindow();
         static float slider_brightness = 1.0f;
-        static int slider_width = 1920;
-        static int slider_height = 1080;
-        ImGui::SliderFloat("Brightness", &slider_brightness, 0.0f, 1.0f, "%d", flags_for_sliders);
-        ImGui::SliderInt("Width", &slider_width, 0, slider_width, "%d", flags_for_sliders);
-        ImGui::SliderInt("Height", &slider_height, 0, slider_height, "%d", flags_for_sliders);
+        static int slider_width = windowModule->screen_surface->w;
+        static int slider_height = windowModule->screen_surface->h;
+        ImGui::SliderFloat("Brightness", &slider_brightness, 0.0f, 1.0f, "%.3f", flags_for_sliders);
+        ImGui::SliderInt("Width", &slider_width, 0, windowModule->getDisplayW(), "%d", flags_for_sliders);
+        ImGui::SliderInt("Height", &slider_height, 0, windowModule->getDisplayH(), "%d", flags_for_sliders);
 
+        // Refresh rate
         ImGui::Text("Refresh Rate: ");
         ImGui::SameLine();
         char buffer[10];
@@ -116,6 +122,7 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
         const char* c_str = buffer;
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), c_str);
 
+        // Window checkboxs
         if (ImGui::BeginTable("split", 2))
         {
             ImGui::TableNextColumn(); 
