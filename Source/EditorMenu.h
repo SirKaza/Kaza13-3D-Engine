@@ -11,19 +11,6 @@ struct ImGuiWindowData
     bool ShowAbout = false;
 };
 
-struct WindowFlags
-{
-    bool fullscreen = false;
-    bool borderless = false;
-    bool resizable = false;
-    bool fullDesktop = false;
-    bool vsync = false;
-
-    bool operator!=(const WindowFlags& other) const {
-        return fullscreen != other.fullscreen || borderless != other.borderless || resizable != other.resizable || fullDesktop != other.fullDesktop || vsync != other.vsync; 
-    }
-};
-
 class EditorMenu
 {
 public:

@@ -3,7 +3,7 @@
 
 #include "Module.h"
 #include "SDL/include/SDL.h"
-#include "EditorMenu.h"
+#include "Globals.h"
 
 class Application;
 
@@ -28,6 +28,7 @@ public:
 	void setFullDesktop(bool fullDesktop);
 	void setVsync(bool vsync);
 	int getRefreshRate();
+	WindowFlags getInitWindowFlags() const { return initWindowFlags; }
 
 public:
 	//The window we'll be rendering to
@@ -36,8 +37,9 @@ public:
 	//The surface contained by the window
 	SDL_Surface* screen_surface = NULL;
 
+private:
 	SDL_DisplayMode displayMode;
-	WindowFlags lastFlags;
+	WindowFlags initWindowFlags;
 };
 
 #endif // __ModuleWindow_H__

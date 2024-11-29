@@ -63,7 +63,11 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
         return;
     }
 
-    static WindowFlags windowCheckboxs;
+    static WindowFlags windowFlags = App->GetWindow()->getInitWindowFlags();
+    static ImGuiSliderFlags flags = ImGuiSliderFlags_None;
+    const ImGuiSliderFlags flags_for_sliders = flags & ~ImGuiSliderFlags_WrapAround;
+
+    int refreshRate = App->GetWindow()->getRefreshRate();
 
     ImGui::Text("Options");
     if (ImGui::CollapsingHeader("Application"))
@@ -75,18 +79,16 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
         // FPS Slider
         static int slider_FPS = 0;
         if (slider_FPS == 0) {
-            if (windowCheckboxs.vsync) maxFPS = App->GetWindow()->getRefreshRate();
-            else maxFPS = 60;
+            if (windowFlags.vsync) maxFPS = refreshRate;
+            else maxFPS = 0;
         }
         else maxFPS = slider_FPS;
-        static ImGuiSliderFlags flags = ImGuiSliderFlags_None;
-        const ImGuiSliderFlags flags_for_sliders = flags & ~ImGuiSliderFlags_WrapAround;
-        ImGui::SliderInt("Max FPS", &slider_FPS, 0, 60, "%d", flags_for_sliders);
+        ImGui::SliderInt("Max FPS", &slider_FPS, 0, refreshRate, "%d", flags_for_sliders);
 
         ImGui::Text("Limit Framerate: ");
         ImGui::SameLine();
         char buffer[10];
-        sprintf(buffer, "%d", slider_FPS);
+        sprintf(buffer, "%d", maxFPS);
         const char* c_str = buffer;
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), c_str);
 
@@ -100,24 +102,37 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
 
     if (ImGui::CollapsingHeader("Window"))
     {
+        static float slider_brightness = 1.0f;
+        static int slider_width = 1920;
+        static int slider_height = 1080;
+        ImGui::SliderFloat("Brightness", &slider_brightness, 0.0f, 1.0f, "%d", flags_for_sliders);
+        ImGui::SliderInt("Width", &slider_width, 0, slider_width, "%d", flags_for_sliders);
+        ImGui::SliderInt("Height", &slider_height, 0, slider_height, "%d", flags_for_sliders);
+
+        ImGui::Text("Refresh Rate: ");
+        ImGui::SameLine();
+        char buffer[10];
+        sprintf(buffer, "%d", refreshRate);
+        const char* c_str = buffer;
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), c_str);
 
         if (ImGui::BeginTable("split", 2))
         {
             ImGui::TableNextColumn(); 
-            if(ImGui::Checkbox("Fullscreen", &windowCheckboxs.fullscreen))
-                App->GetWindow()->setFullscreen(windowCheckboxs.fullscreen);
+            if(ImGui::Checkbox("Fullscreen", &windowFlags.fullscreen))
+                App->GetWindow()->setFullscreen(windowFlags.fullscreen);
             ImGui::TableNextColumn(); 
-            if (ImGui::Checkbox("Borderless", &windowCheckboxs.borderless))
-                App->GetWindow()->setBorderless(windowCheckboxs.borderless);
+            if (ImGui::Checkbox("Borderless", &windowFlags.borderless))
+                App->GetWindow()->setBorderless(windowFlags.borderless);
             ImGui::TableNextColumn(); 
-            if (ImGui::Checkbox("Resizable", &windowCheckboxs.resizable))
-                App->GetWindow()->setResizable(windowCheckboxs.resizable);
+            if (ImGui::Checkbox("Resizable", &windowFlags.resizable))
+                App->GetWindow()->setResizable(windowFlags.resizable);
             ImGui::TableNextColumn(); 
-            if (ImGui::Checkbox("Full Desktop", &windowCheckboxs.fullDesktop))
-                App->GetWindow()->setFullDesktop(windowCheckboxs.fullDesktop);
+            if (ImGui::Checkbox("Full Desktop", &windowFlags.fullDesktop))
+                App->GetWindow()->setFullDesktop(windowFlags.fullDesktop);
             ImGui::TableNextColumn();
-            if (ImGui::Checkbox("VSYNC", &windowCheckboxs.vsync))
-                App->GetWindow()->setVsync(windowCheckboxs.vsync);
+            if (ImGui::Checkbox("Vsync", &windowFlags.vsync))
+                App->GetWindow()->setVsync(windowFlags.vsync);
             ImGui::EndTable();
         }
     }

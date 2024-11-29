@@ -134,9 +134,10 @@ void ModuleOpenGL::WindowResized(unsigned width, unsigned height, unsigned windo
 	SDL_Window* window = SDL_GetWindowFromID(windowID);
 	if (window != nullptr)
 	{
-		SDL_Surface* screen_surface = SDL_GetWindowSurface(window);
 		if (windowID == SDL_GetWindowID(App->GetWindow()->window)) // main window
 		{
+			App->GetWindow()->screen_surface->w = width;
+			App->GetWindow()->screen_surface->h = height;
 			App->GetCamera()->setAspectRatio(App->GetCamera()->getAspectRatio());
 			glViewport(0, 0, width, height);
 			ENGINE_LOG("Window Resized to %dx%d", width, height);

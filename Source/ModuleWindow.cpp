@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleOpenGL.h"
+#include "ModuleEditor.h"
 #include "EditorMenu.h"
 
 ModuleWindow::ModuleWindow()
@@ -34,7 +35,7 @@ bool ModuleWindow::Init()
 		if(FULLSCREEN == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
-			lastFlags.fullscreen = true;
+			initWindowFlags.fullscreen = true;
 		}
 
 		window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
@@ -48,6 +49,12 @@ bool ModuleWindow::Init()
 		{
 			//Get window surface
 			screen_surface = SDL_GetWindowSurface(window);
+
+			if (VSYNC == true)
+			{
+				SDL_GL_SetSwapInterval(1);
+				initWindowFlags.vsync = true;
+			}
 
 			SDL_GetCurrentDisplayMode(1, &displayMode);
 		}
@@ -74,9 +81,11 @@ bool ModuleWindow::CleanUp()
 
 void ModuleWindow::setFullscreen(bool fullscreen)
 {
-	if (fullscreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+	if (fullscreen) 
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 	else {
 		SDL_SetWindowFullscreen(window, 0);
+		screen_surface = SDL_GetWindowSurface(window);
 		App->GetOpenGL()->WindowResized(screen_surface->w, screen_surface->h, SDL_GetWindowID(window));
 	}
 }
@@ -95,9 +104,12 @@ void ModuleWindow::setResizable(bool resizable)
 
 void ModuleWindow::setFullDesktop(bool fullDesktop)
 {
-	if (fullDesktop) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	if (fullDesktop) {
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	}
 	else {
 		SDL_SetWindowFullscreen(window, 0);
+		screen_surface = SDL_GetWindowSurface(window);
 		App->GetOpenGL()->WindowResized(screen_surface->w, screen_surface->h, SDL_GetWindowID(window));
 	}
 }
