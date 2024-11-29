@@ -1,6 +1,8 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleWindow.h"
+#include "ModuleOpenGL.h"
+#include "EditorMenu.h"
 
 ModuleWindow::ModuleWindow()
 {
@@ -27,11 +29,12 @@ bool ModuleWindow::Init()
 		//Create window
 		int width = SCREEN_WIDTH;
 		int height = SCREEN_HEIGHT;
-		Uint32 flags = SDL_WINDOW_SHOWN |  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+		Uint32 flags = SDL_WINDOW_SHOWN |  SDL_WINDOW_OPENGL;
 
 		if(FULLSCREEN == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
+			lastFlags.fullscreen = true;
 		}
 
 		window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
@@ -45,6 +48,8 @@ bool ModuleWindow::Init()
 		{
 			//Get window surface
 			screen_surface = SDL_GetWindowSurface(window);
+
+			SDL_GetCurrentDisplayMode(1, &displayMode);
 		}
 	}
 
@@ -67,3 +72,43 @@ bool ModuleWindow::CleanUp()
 	return true;
 }
 
+void ModuleWindow::setFullscreen(bool fullscreen)
+{
+	if (fullscreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+	else {
+		SDL_SetWindowFullscreen(window, 0);
+		App->GetOpenGL()->WindowResized(screen_surface->w, screen_surface->h, SDL_GetWindowID(window));
+	}
+}
+
+void ModuleWindow::setBorderless(bool borderless)
+{
+	SDL_bool sdl_borderless = borderless ? SDL_FALSE : SDL_TRUE;
+	SDL_SetWindowBordered(window, sdl_borderless);
+}
+
+void ModuleWindow::setResizable(bool resizable)
+{
+	SDL_bool sdl_resizable = resizable ? SDL_TRUE : SDL_FALSE;
+	SDL_SetWindowResizable(window, sdl_resizable);
+}
+
+void ModuleWindow::setFullDesktop(bool fullDesktop)
+{
+	if (fullDesktop) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	else {
+		SDL_SetWindowFullscreen(window, 0);
+		App->GetOpenGL()->WindowResized(screen_surface->w, screen_surface->h, SDL_GetWindowID(window));
+	}
+}
+
+void ModuleWindow::setVsync(bool vsync)
+{
+	if (vsync) SDL_GL_SetSwapInterval(1);
+	else SDL_GL_SetSwapInterval(0);
+}
+
+int ModuleWindow::getRefreshRate()
+{
+	return displayMode.refresh_rate;
+}
