@@ -55,18 +55,18 @@ update_status ModuleRender::Update()
 		float4x4::RotateZ(pi / 4.0f),
 		float3(2.0f, 1.0f, 1.0f));
 	
-	//float3 target = model.TranslatePart();
-	//float3 targetPos(0.0f, 0.0f, 0.0f);
+	float3 target = model.TranslatePart();
+	float3 targetPos(0.0f, 0.0f, 0.0f);
 
-	App->GetCamera()->LookAt(frustum.pos, frustum.front, frustum.up);
-	float4x4 view = App->GetCamera()->getViewMatrixInverted();
+	App->GetCamera()->LookAt(frustum.pos, targetPos, frustum.up);
+	float4x4 view = App->GetCamera()->getViewMatrixTransposed();
 
 	float4x4 proj = App->GetCamera()->getProjectionMatrix();
 
 	// Pass MVP as uniform to Vertex shader
 	glUseProgram(program_id);
 	glUniformMatrix4fv(0, 1, GL_TRUE, &model[0][0]);
-	glUniformMatrix4fv(1, 1, GL_TRUE, &view[0][0]);
+	glUniformMatrix4fv(1, 1, GL_FALSE, &view[0][0]);
 	glUniformMatrix4fv(2, 1, GL_TRUE, &proj[0][0]);
 
 	// Bind buffer and vertex attributes

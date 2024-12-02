@@ -32,7 +32,7 @@ public:
 
 	float4x4 getProjectionMatrix() const { return frustum.ProjectionMatrix(); }
 	float4x4 getViewMatrix() const { return view; }
-	float4x4 getViewMatrixInverted() const { return view.Inverted(); }
+	float4x4 getViewMatrixTransposed() const { return view.Transposed(); }
 
 private:
 	Frustum frustum;

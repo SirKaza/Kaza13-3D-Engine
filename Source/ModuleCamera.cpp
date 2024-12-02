@@ -32,6 +32,7 @@ bool ModuleCamera::Init()
 	frustum.verticalFov = math::pi / 4.0f;
 	App->GetCamera()->setAspectRatio(getAspectRatio());
 
+
 	return true;
 }
 
@@ -147,8 +148,8 @@ void ModuleCamera::LookAt(const float3& eye, const float3& target, const float3&
 	
 	float3 up_corrected = right.Cross(forward).Normalized();
 
-	view.SetCol(0, float4(right, 0.0f));
-	view.SetCol(1, float4(up_corrected, 0.0f));
-	view.SetCol(2, float4(-forward, 0.0f));
-	view.SetCol(3, float4(eye, 1.0f));
+	view.SetRow(0, float4(right, -eye.Dot(right)));
+	view.SetRow(1, float4(up_corrected, -eye.Dot(up_corrected)));
+	view.SetRow(2, float4(-forward, eye.Dot(forward)));
+	view.SetRow(3, float4(0.0f, 0.0f, 0.0f, 1.0f));
 }

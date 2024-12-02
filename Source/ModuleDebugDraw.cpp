@@ -612,7 +612,7 @@ bool ModuleDebugDraw::CleanUp()
 
 update_status  ModuleDebugDraw::Update()
 {
-    float4x4 view = App->GetCamera()->getViewMatrixInverted();
+    float4x4 view = App->GetCamera()->getViewMatrix();
     float4x4 proj = App->GetCamera()->getProjectionMatrix();
     float4x4 vpMatrix = proj * view;
     int w = App->GetWindow()->screen_surface->w;
