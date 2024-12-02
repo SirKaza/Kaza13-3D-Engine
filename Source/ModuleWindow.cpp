@@ -119,3 +119,14 @@ void ModuleWindow::setVsync(bool vsync)
 	if (vsync) SDL_GL_SetSwapInterval(1);
 	else SDL_GL_SetSwapInterval(0);
 }
+
+void ModuleWindow::setBrightness(float brightness)
+{
+	SDL_SetWindowBrightness(window, brightness);
+	ENGINE_LOG("Brightness set to %.3f", brightness);
+}
+
+float ModuleWindow::getBrightness() const
+{
+	return SDL_GetWindowBrightness(window);
+}

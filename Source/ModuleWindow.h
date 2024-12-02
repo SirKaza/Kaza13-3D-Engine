@@ -27,10 +27,14 @@ public:
 	void setResizable(bool resizable);
 	void setFullDesktop(bool fullDesktop);
 	void setVsync(bool vsync);
+	void setBrightness(float brightness);
+	float getBrightness() const;
 	int getRefreshRate() const { return displayMode.refresh_rate; }
 	int getDisplayW() const { return displayMode.w; }
 	int getDisplayH() const { return displayMode.h; }
 	WindowFlags getInitWindowFlags() const { return initWindowFlags; }
+	SDL_Surface* getScreenSurface() const { return screen_surface; }
+	void setWindowSize(int w, int h) { SDL_SetWindowSize(window, w, h); }
 
 public:
 	//The window we'll be rendering to

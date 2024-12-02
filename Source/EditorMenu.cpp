@@ -6,6 +6,7 @@
 #include "LogEditor.h"
 #include "Application.h"
 #include "ModuleWindow.h"
+#include "ModuleOpenGL.h"
 
 // global variables
 LogEditor myLog;
@@ -107,12 +108,18 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
     {
         // Bright, width and height
         ModuleWindow* windowModule = App->GetWindow();
-        static float slider_brightness = 1.0f;
-        static int slider_width = windowModule->screen_surface->w;
-        static int slider_height = windowModule->screen_surface->h;
-        ImGui::SliderFloat("Brightness", &slider_brightness, 0.0f, 1.0f, "%.3f", flags_for_sliders);
-        ImGui::SliderInt("Width", &slider_width, 0, windowModule->getDisplayW(), "%d", flags_for_sliders);
-        ImGui::SliderInt("Height", &slider_height, 0, windowModule->getDisplayH(), "%d", flags_for_sliders);
+        static float slider_brightness = windowModule->getBrightness();
+        int slider_width = windowModule->getScreenSurface()->w;
+        int slider_height = windowModule->getScreenSurface()->h;
+        bool brightnessChanged = ImGui::SliderFloat("Brightness", &slider_brightness, 0.0f, 1.0f, "%.3f", flags_for_sliders);
+        bool widthChanged = ImGui::SliderInt("Width", &slider_width, 0, windowModule->getDisplayW(), "%d", flags_for_sliders);
+        bool heightChanged = ImGui::SliderInt("Height", &slider_height, 0, windowModule->getDisplayH(), "%d", flags_for_sliders);
+
+        if (brightnessChanged) windowModule->setBrightness(slider_brightness);
+        if (widthChanged || heightChanged) {
+            windowModule->setWindowSize(slider_width, slider_height);
+            App->GetOpenGL()->WindowResized(slider_width, slider_height, SDL_GetWindowID(windowModule->window));
+        }
 
         // Refresh rate
         ImGui::Text("Refresh Rate: ");
