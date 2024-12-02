@@ -7,6 +7,7 @@
 
 ModuleWindow::ModuleWindow()
 {
+	SDL_zero(displayMode);
 }
 
 // Destructor

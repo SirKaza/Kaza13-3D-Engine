@@ -45,8 +45,6 @@ update_status ModuleCamera::Update()
     float3 newPos;
     float deltaTime = App->GetDeltaTime();
 
-    //keyboard combinations sum up?
-
     if ((keyboard[SDL_SCANCODE_Q] || keyboard[SDL_SCANCODE_E]) && !(keyboard[SDL_SCANCODE_Q] && keyboard[SDL_SCANCODE_E])) // Q up E down
     {
         float3 moveDirection = frustum.up.Normalized();  // normalize to evade irregular movements
