@@ -7,6 +7,8 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleOpenGL.h"
+#include "SDL.h"
+#include <GL/glew.h>
 
 // global variables
 LogEditor myLog;
@@ -88,10 +90,7 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
 
         ImGui::Text("Limit Framerate: ");
         ImGui::SameLine();
-        char buffer[10];
-        sprintf(buffer, "%d", maxFPS);
-        const char* c_str = buffer;
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), c_str);
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d", maxFPS);
 
         // FPS & MS graph
         char title[25]; // Title text
@@ -124,10 +123,7 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
         // Refresh rate
         ImGui::Text("Refresh Rate: ");
         ImGui::SameLine();
-        char buffer[10];
-        sprintf(buffer, "%d", refreshRate);
-        const char* c_str = buffer;
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), c_str);
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d", refreshRate);
 
         // Window checkboxs
         if (ImGui::BeginTable("split", 2))
@@ -153,7 +149,74 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
 
     if (ImGui::CollapsingHeader("Hardware"))
     {
+        // SDL version
+        SDL_version sdlVersion;
+        SDL_GetVersion(&sdlVersion);
+        ImGui::Text("SDL Version:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d.%d.%d", sdlVersion.major, sdlVersion.minor, sdlVersion.patch);
 
+        // OpenGL version
+        const char* version = (const char*)glGetString(GL_VERSION);
+        ImGui::Text("OpenGL Version:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", version);
+
+        ImGui::Separator(); // ----
+
+        // CPU
+        ImGui::Text("CPUs:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d (Cache: %dkb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+
+        // RAM
+        ImGui::Text("System RAM:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%.2f GB", SDL_GetSystemRAM() / 1024.0f);
+
+        ImGui::Text("Caps:");
+        showCaps();
+
+        ImGui::Separator(); // ----
+
+        // GPU
+        const char* vendor = (const char*) glGetString(GL_VENDOR);
+        ImGui::Text("GPU:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", vendor);
+        
+        // GPU Brand
+        const char* renderer = (const char*)glGetString(GL_RENDERER);
+        ImGui::Text("Brand:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", renderer);
+
+        GLint vramBudget, vramUsage, vramAvailable, vramReserved;
+
+        if (glewIsSupported("GL_NVX_gpu_memory_info")) {
+            glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &vramBudget);  // Total memory
+            glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &vramAvailable); // Actual memory available
+            glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &vramReserved);      // Reserved memory for GPU
+
+            vramUsage = vramBudget - vramAvailable; // memory usage
+
+            // VRAM Metrics in MB
+            ImGui::Text("VRAM Budget:");
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%.2f MB", vramBudget / 1024.0f);
+
+            ImGui::Text("VRAM Usage:");
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%.2f MB", vramUsage / 1024.0f);
+
+            ImGui::Text("VRAM Available:");
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%.2f MB", vramAvailable / 1024.0f);
+
+            ImGui::Text("VRAM Reserved:");
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%.2f MB", vramReserved / 1024.0f);
+        }
     }
     ImGui::End();
 }
@@ -337,5 +400,65 @@ void EditorMenu::showAboutWindow(bool* p_open)
         ImGui::EndChild();
     }
     ImGui::End();
+}
+
+void EditorMenu::showCaps() const
+{
+    if (SDL_HasRDTSC()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RDTSC,");
+    }
+    if (SDL_HasAltiVec()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "AltiVec,");
+    }
+    if (SDL_HasMMX()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MMX,");
+    }
+    if (SDL_Has3DNow()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "3DNow,");
+    }
+    if (SDL_HasSSE()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE,");
+    }
+    if (SDL_HasSSE2()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE2,");
+    }
+    if (SDL_HasSSE3()) {
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE3,");
+    }
+    if (SDL_HasSSE41()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE41,");
+    }
+    if (SDL_HasSSE42()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SSE42,");
+    }
+    if (SDL_HasAVX()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "AVX,");
+    }
+    if (SDL_HasAVX2()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "AVX2,");
+    }
+    if (SDL_HasAVX512F()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "AVX512F,");
+    }
+    if (SDL_HasARMSIMD()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ARMSIMD,");
+    }
+    if (SDL_HasNEON()) {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "NEON,");
+    }
+        
 }
 

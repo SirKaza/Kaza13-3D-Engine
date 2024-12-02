@@ -20,6 +20,7 @@ public:
     void Draw();
 	void showAboutWindow(bool* p_open);
 	void showConfigurationWindow(bool* p_open);
+    void showCaps() const;
 };
 extern LogEditor myLog;
 extern ConsoleEditor myConsole;
