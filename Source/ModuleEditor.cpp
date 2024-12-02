@@ -6,7 +6,7 @@
 #include <imgui_impl_opengl3.h>
 #include "EditorMenu.h"
 
-ModuleEditor::ModuleEditor() : context(nullptr)
+ModuleEditor::ModuleEditor() : context(nullptr), menu(nullptr)
 {}
 
 ModuleEditor::~ModuleEditor()
