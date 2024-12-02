@@ -6,6 +6,7 @@
 #include "LogEditor.h"
 #include "Application.h"
 #include "ModuleWindow.h"
+#include "ModuleCamera.h"
 #include "ModuleOpenGL.h"
 #include "SDL.h"
 #include <GL/glew.h>
@@ -105,16 +106,20 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
 
     if (ImGui::CollapsingHeader("Window"))
     {
-        // Bright, width and height
+        // Bright, FOV, width and height
         ModuleWindow* windowModule = App->GetWindow();
         static float slider_brightness = windowModule->getBrightness();
+        static int slider_fov = App->GetCamera()->getFOV();
         int slider_width = windowModule->getScreenSurface()->w;
         int slider_height = windowModule->getScreenSurface()->h;
+
         bool brightnessChanged = ImGui::SliderFloat("Brightness", &slider_brightness, 0.0f, 1.0f, "%.3f", flags_for_sliders);
+        bool fovChanged = ImGui::SliderInt("FOV", &slider_fov, 0, 120, "%d", flags_for_sliders);
         bool widthChanged = ImGui::SliderInt("Width", &slider_width, 0, windowModule->getDisplayW(), "%d", flags_for_sliders);
         bool heightChanged = ImGui::SliderInt("Height", &slider_height, 0, windowModule->getDisplayH(), "%d", flags_for_sliders);
 
         if (brightnessChanged) windowModule->setBrightness(slider_brightness);
+        if (fovChanged) App->GetCamera()->setFOV(slider_fov);
         if (widthChanged || heightChanged) {
             windowModule->setWindowSize(slider_width, slider_height);
             App->GetOpenGL()->WindowResized(slider_width, slider_height, SDL_GetWindowID(windowModule->window));

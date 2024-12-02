@@ -120,6 +120,11 @@ void ModuleCamera::setFOV(float horizontal)
 	frustum.verticalFov = 2.f * atanf(tanf(horizontal * 0.5f) / getAspectRatio());
 }
 
+int ModuleCamera::getFOV() const
+{
+    return 2.f * atanf(tanf(frustum.verticalFov * 0.5f) / getAspectRatio());
+}
+
 // change the vertical FOV to meet the new aspect ratio
 void ModuleCamera::setAspectRatio(float aspect)
 {
