@@ -113,16 +113,16 @@ float ModuleCamera::getAspectRatio() const
 }
 
 // set the horizontal FOV keeping the aspect ratio
-void ModuleCamera::setFOV(float horizontal)
+void ModuleCamera::setFOV(int horizontal)
 {
-	frustum.horizontalFov = horizontal;
+	frustum.horizontalFov = horizontal * (math::pi / 180.0f); // degToRad
 
-	frustum.verticalFov = 2.f * atanf(tanf(horizontal * 0.5f) / getAspectRatio());
+	frustum.verticalFov = 2.f * atanf(tanf(frustum.horizontalFov * 0.5f) / getAspectRatio());
 }
 
 int ModuleCamera::getFOV() const
 {
-    return 2.f * atanf(tanf(frustum.verticalFov * 0.5f) / getAspectRatio());
+    return static_cast<int>(frustum.horizontalFov * (180.0f / math::pi)); // radToDeg
 }
 
 // change the vertical FOV to meet the new aspect ratio

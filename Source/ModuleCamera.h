@@ -17,7 +17,7 @@ public:
 	Frustum getFrustum() const { return frustum; }
 	float getAspectRatio() const;
 
-	void setFOV(float horizontal);
+	void setFOV(int horizontal);
 	int getFOV() const;
 	void setAspectRatio(float aspect);
 	void setPlaneDistances(float nearPlane, float farPlane);
