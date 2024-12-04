@@ -154,6 +154,9 @@
     <ClCompile Include="EditorMenu.cpp">
       <Filter>Modules\Editor\MyMenuEditor</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleTexture.cpp">
+      <Filter>Modules\Texture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -419,6 +422,9 @@
     <ClInclude Include="EditorMenu.h">
       <Filter>Modules\Editor\MyMenuEditor</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleTexture.h">
+      <Filter>Modules\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Modules">
@@ -465,6 +471,9 @@
     </Filter>
     <Filter Include="Modules\Camera">
       <UniqueIdentifier>{9da94010-47b7-436d-a89d-45af0205cbb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Texture">
+      <UniqueIdentifier>{562d07f9-6f28-474a-906e-09fc80e5e361}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
