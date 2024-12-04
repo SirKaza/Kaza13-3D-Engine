@@ -5,9 +5,11 @@
 #include "ModuleInput.h"
 #include "Math/MathNamespace.h"
 #include "Math/MathConstants.h"
+#include "Math/float3.h"
 #include "Math/float4.h"
 #include "Math/float4x4.h"
 #include "Geometry/Frustum.h"
+#include "Math/Quat.h"
 
 ModuleCamera::ModuleCamera()
 {
@@ -32,7 +34,6 @@ bool ModuleCamera::Init()
 
 	frustum.verticalFov = math::pi / 4.0f;
 	App->GetCamera()->setAspectRatio(getAspectRatio());
-
 
 	return true;
 }
@@ -85,15 +86,23 @@ update_status ModuleCamera::Update()
 		else 
 		{
 			float sensitivity = ROTATE_SENSITIVITY;
-			float yaw = dx * sensitivity;
-			float pitch = dy * sensitivity;
+			float yaw = DegToRad(dx * sensitivity);
+			float pitch = DegToRad(dy * sensitivity);
 
-			// Rotate frustum front and up vectors
-			float3x3 rotationMatrix = float3x3::RotateAxisAngle(frustum.up, DegToRad(yaw)) *
-				float3x3::RotateAxisAngle(frustum.WorldRight(), DegToRad(pitch));
+			static float accPitch = frustum.up.y; 
+			const float topRef = frustum.up.y;
 
-			frustum.front = rotationMatrix.MulDir(frustum.front).Normalized();
-			frustum.up = rotationMatrix.MulDir(frustum.up).Normalized();
+			if ((PITCH_LIMIT_MAX + topRef >= accPitch + pitch) && (accPitch + pitch >= PITCH_LIMIT_MIN + topRef))
+			{
+				accPitch += pitch;
+				Quat yawRotation = Quat::RotateY(yaw);
+				Quat pitchRotation = Quat::RotateAxisAngle(frustum.WorldRight(), pitch);
+
+				frustum.front = (yawRotation * pitchRotation).Transform(frustum.front).Normalized();
+				frustum.up = (yawRotation * pitchRotation).Transform(frustum.up).Normalized();
+
+				setOrientation(frustum.front, frustum.up);
+			}
 		}
 	}
 	// Middle click: drag

@@ -43,22 +43,24 @@ bool ModuleRender::Init()
 
 	free(vtx_shader);
 	free(frg_shader);
+
+
+
 	return true;
 
 }
 
 update_status ModuleRender::Update()
 {
-	Frustum frustum = App->GetCamera()->getFrustum();
-
 	model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),
 		float4x4::RotateZ(pi / 4.0f),
 		float3(2.0f, 1.0f, 1.0f));
 	
 	float3 target = model.TranslatePart();
-	float3 targetPos(0.0f, 0.0f, 0.0f);
+	//float3 targetPos(0.0f, 0.0f, 0.0f);
+	Frustum frustum = App->GetCamera()->getFrustum();
+	App->GetCamera()->LookAt(frustum.pos, target, frustum.up);
 
-	App->GetCamera()->LookAt(frustum.pos, targetPos, frustum.up);
 	float4x4 view = App->GetCamera()->getViewMatrixTransposed();
 
 	float4x4 proj = App->GetCamera()->getProjectionMatrix();
