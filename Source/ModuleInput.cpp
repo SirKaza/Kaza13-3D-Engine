@@ -34,6 +34,7 @@ bool ModuleInput::Init()
 update_status ModuleInput::Update()
 {
     SDL_Event sdlEvent;
+    mouseMotionX = mouseMotionY = mouseWheelY = 0; // reset motion each frame
 
     while (SDL_PollEvent(&sdlEvent) != 0)
     {
@@ -42,14 +43,26 @@ update_status ModuleInput::Update()
         {
             case SDL_QUIT:
                 return UPDATE_STOP;
+
             case SDL_WINDOWEVENT:
                 if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
                     App->GetOpenGL()->WindowResized(sdlEvent.window.data1, sdlEvent.window.data2, sdlEvent.window.windowID);
                 break;
+                
+            case SDL_MOUSEMOTION:
+                mouseX = sdlEvent.motion.x;
+                mouseY = sdlEvent.motion.y;
+                mouseMotionX = sdlEvent.motion.xrel; 
+                mouseMotionY = sdlEvent.motion.yrel;
+                break;
+
+            case SDL_MOUSEWHEEL:
+                mouseWheelY = sdlEvent.wheel.y;
         }
     }
 
-    keyboard = SDL_GetKeyboardState(NULL); // should not be freed by the caller. SDL manages
+    keyboard = SDL_GetKeyboardState(NULL); // should not be freed by the caller. SDL manages it
+    mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
 
     return UPDATE_CONTINUE;
 }

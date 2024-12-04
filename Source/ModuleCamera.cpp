@@ -1,3 +1,4 @@
+#include "Globals.h"
 #include "ModuleCamera.h"
 #include "Application.h"
 #include "ModuleWindow.h"
@@ -39,65 +40,81 @@ bool ModuleCamera::Init()
 update_status ModuleCamera::Update()
 {
     const Uint8* keyboard = App->GetInput()->getKeyboard();
-    float speed = 3.0f;
+	float speed = CAMERA_SPEED;
     if (keyboard[SDL_SCANCODE_LSHIFT])
         speed *= 3;
-    bool moved = false;
-    float3 newPos;
+
     float deltaTime = App->GetDeltaTime();
+	int dx, dy;
+	Uint32 mouseButtons = App->GetInput()->getMouseButtons();
+	int mouseWheel = App->GetInput()->getMouseWheelY();
+	App->GetInput()->getMouseMotion(dx, dy);
 
-    if ((keyboard[SDL_SCANCODE_Q] || keyboard[SDL_SCANCODE_E]) && !(keyboard[SDL_SCANCODE_Q] && keyboard[SDL_SCANCODE_E])) // Q up E down
-    {
-        float3 moveDirection = frustum.up.Normalized();  // normalize to evade irregular movements
-        if (keyboard[SDL_SCANCODE_Q])
-        {
-            newPos = frustum.pos + moveDirection * speed * deltaTime;
-        }
-        else if (keyboard[SDL_SCANCODE_E])
-        {
-            newPos = frustum.pos - moveDirection * speed * deltaTime;
-        }
-        setPosition(newPos);
-        moved = true;
-    }
+	// Right click pressed
+	if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT))
+	{
+		// Right click + WASD/QE: movement
+		if (keyboard[SDL_SCANCODE_Q] || keyboard[SDL_SCANCODE_E] || keyboard[SDL_SCANCODE_W] || keyboard[SDL_SCANCODE_S] || keyboard[SDL_SCANCODE_A] || keyboard[SDL_SCANCODE_D])
+		{
+			float3 moveDirection = float3::zero;
 
-    if ((keyboard[SDL_SCANCODE_W] || keyboard[SDL_SCANCODE_S]) && !(keyboard[SDL_SCANCODE_W] && keyboard[SDL_SCANCODE_S])) // W forward S backwards
-    {
-        float3 moveDirection = frustum.front.Normalized();  // normalize to evade irregular movements
+			if (keyboard[SDL_SCANCODE_Q]) moveDirection += frustum.up;
+			if (keyboard[SDL_SCANCODE_E]) moveDirection -= frustum.up;
+			if (keyboard[SDL_SCANCODE_W]) moveDirection += frustum.front;
+			if (keyboard[SDL_SCANCODE_S]) moveDirection -= frustum.front;
+			if (keyboard[SDL_SCANCODE_A]) moveDirection -= frustum.WorldRight();
+			if (keyboard[SDL_SCANCODE_D]) moveDirection += frustum.WorldRight();
 
-        if (keyboard[SDL_SCANCODE_W])
-        {
-            newPos = frustum.pos + moveDirection * speed * deltaTime;
+			if (!moveDirection.IsZero())
+			{
+				moveDirection.Normalize();
+				setPosition(frustum.pos + moveDirection * speed * deltaTime);
+			}
+		}
+		
+		// Alt + Right click: zoom
+		else if (keyboard[SDL_SCANCODE_LALT]) 
+		{
+			float zoomSpeed = ZOOM_SPEED;
+			float3 zoomDirection = frustum.front * (dy * zoomSpeed);
 
-        }
-        else if (keyboard[SDL_SCANCODE_S])
-        {
-            newPos = frustum.pos - moveDirection * speed * deltaTime;
-        }
-        setPosition(newPos);
-        moved = true;
-    }
+			setPosition(frustum.pos + zoomDirection);
+		}
+		
+		// Right click: rotate
+		else 
+		{
+			float sensitivity = ROTATE_SENSITIVITY;
+			float yaw = dx * sensitivity;
+			float pitch = dy * sensitivity;
 
-    if ((keyboard[SDL_SCANCODE_A] || keyboard[SDL_SCANCODE_D]) && !(keyboard[SDL_SCANCODE_A] && keyboard[SDL_SCANCODE_D])) // A left D right
-    {
-        float3 moveDirection = frustum.WorldRight().Normalized();  // normalize to evade irregular movements
+			// Rotate frustum front and up vectors
+			float3x3 rotationMatrix = float3x3::RotateAxisAngle(frustum.up, DegToRad(yaw)) *
+				float3x3::RotateAxisAngle(frustum.WorldRight(), DegToRad(pitch));
 
-        if (keyboard[SDL_SCANCODE_A])
-        {
-            newPos = frustum.pos - moveDirection * speed * deltaTime;
-        }
-        else if (keyboard[SDL_SCANCODE_D])
-        {
-            newPos = frustum.pos + moveDirection * speed * deltaTime;
-        }
-        setPosition(newPos);
-        moved = true;
-    }
+			frustum.front = rotationMatrix.MulDir(frustum.front).Normalized();
+			frustum.up = rotationMatrix.MulDir(frustum.up).Normalized();
+		}
+	}
+	// Middle click: drag
+	else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_MIDDLE))
+	{
+		float sensitivity = DRAG_SENSITIVITY;
+		
+		float3 moveDirection = frustum.WorldRight() * (-dx * sensitivity) +
+			frustum.up * (dy * sensitivity);
 
-    if (moved) {
-        ENGINE_LOG("Camera Pos: (%.2f, %.2f, %.2f)/ Front: (%.2f, %.2f, %.2f)/ Up: (%.2f, %.2f, %.2f)", frustum.pos.x, frustum.pos.y, frustum.pos.z, 
-            frustum.front.x, frustum.front.y, frustum.front.z, frustum.up.x, frustum.up.y, frustum.up.z);
-    }
+		setPosition(frustum.pos + moveDirection);
+	}
+
+	// Wheel movement for zooming
+	else if (mouseWheel != 0)
+	{
+		float zoomSpeed = WHEEL_SPEED;
+		float3 zoomDirection = frustum.front * (mouseWheel * zoomSpeed);
+
+		setPosition(frustum.pos + zoomDirection);
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -115,14 +132,14 @@ float ModuleCamera::getAspectRatio() const
 // set the horizontal FOV keeping the aspect ratio
 void ModuleCamera::setFOV(int horizontal)
 {
-	frustum.horizontalFov = horizontal * (math::pi / 180.0f); // degToRad
+	frustum.horizontalFov = DegToRad(horizontal);
 
 	frustum.verticalFov = 2.f * atanf(tanf(frustum.horizontalFov * 0.5f) / getAspectRatio());
 }
 
 int ModuleCamera::getFOV() const
 {
-    return static_cast<int>(frustum.horizontalFov * (180.0f / math::pi)); // radToDeg
+	return static_cast<int>(RadToDeg(frustum.horizontalFov));
 }
 
 // change the vertical FOV to meet the new aspect ratio
