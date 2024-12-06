@@ -40,16 +40,21 @@ bool ModuleCamera::Init()
 
 update_status ModuleCamera::Update()
 {
-    const Uint8* keyboard = App->GetInput()->getKeyboard();
+	// focus in main window
+	if (SDL_GetKeyboardFocus() != App->GetWindow()->window || SDL_GetMouseFocus() != App->GetWindow()->window)
+		return UPDATE_CONTINUE;
+
+	ModuleInput* input = App->GetInput();
+    const Uint8* keyboard = input->getKeyboard();
 	float speed = CAMERA_SPEED;
     if (keyboard[SDL_SCANCODE_LSHIFT])
         speed *= 3;
 
     float deltaTime = App->GetDeltaTime();
 	int dx, dy;
-	Uint32 mouseButtons = App->GetInput()->getMouseButtons();
-	int mouseWheel = App->GetInput()->getMouseWheelY();
-	App->GetInput()->getMouseMotion(dx, dy);
+	Uint32 mouseButtons = input->getMouseButtons();
+	int mouseWheel = input->getMouseWheelY();
+	input->getMouseMotion(dx, dy);
 
 	// Right click pressed
 	if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT))
