@@ -39,8 +39,7 @@ struct WindowFlags
 #define DRAG_SENSITIVITY 0.01f
 #define ZOOM_SPEED 0.05f
 #define WHEEL_SPEED 0.5f
-#define PITCH_LIMIT_MIN -0.15f
-#define PITCH_LIMIT_MAX 0.15f
+#define PITCH_LIMIT 0.30f
 
 // Configuration -----------
 #define SCREEN_WIDTH 640

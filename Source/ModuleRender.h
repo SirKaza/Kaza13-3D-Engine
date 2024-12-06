@@ -12,12 +12,16 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	void lookAtTarget();
+	float4x4 getViewTransposed() const { return view.Transposed(); }
+
 	float4x4 getModel() const { return model; }
+	float4x4 getView() const { return view; }
 
 private:
 	unsigned vbo;
 	unsigned program_id;
 
-	float4x4 model;
+	float4x4 model, view;
 };
 

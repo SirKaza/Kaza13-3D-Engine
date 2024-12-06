@@ -9,6 +9,7 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleCamera.h"
+#include "ModuleRender.h"
 
 class DDRenderInterfaceCoreGL final
     : public dd::RenderInterface
@@ -612,7 +613,7 @@ bool ModuleDebugDraw::CleanUp()
 
 update_status  ModuleDebugDraw::Update()
 {
-    float4x4 view = App->GetCamera()->getViewMatrix();
+    float4x4 view = App->GetRender()->getView();
     float4x4 proj = App->GetCamera()->getProjectionMatrix();
     float4x4 vpMatrix = proj * view;
     int w = App->GetWindow()->screen_surface->w;

@@ -92,7 +92,7 @@ update_status ModuleCamera::Update()
 			static float accPitch = frustum.up.y; 
 			const float topRef = frustum.up.y;
 
-			if ((PITCH_LIMIT_MAX + topRef >= accPitch + pitch) && (accPitch + pitch >= PITCH_LIMIT_MIN + topRef))
+			if ((PITCH_LIMIT + topRef >= accPitch + pitch) && (accPitch + pitch >= -PITCH_LIMIT + topRef))
 			{
 				accPitch += pitch;
 				Quat yawRotation = Quat::RotateY(yaw);
@@ -163,7 +163,7 @@ void ModuleCamera::setPlaneDistances(float nearPlane, float farPlane)
 	frustum.farPlaneDistance = farPlane;
 }
 
-void ModuleCamera::LookAt(const float3& eye, const float3& target, const float3& up)
+float4x4 ModuleCamera::LookAt(const float3& eye, const float3& target, const float3& up)
 {
 	float3 forward = (target - eye).Normalized();
 	float3 right;
@@ -179,8 +179,11 @@ void ModuleCamera::LookAt(const float3& eye, const float3& target, const float3&
 	
 	float3 up_corrected = right.Cross(forward).Normalized();
 
+	float4x4 view;
 	view.SetRow(0, float4(right, -eye.Dot(right)));
 	view.SetRow(1, float4(up_corrected, -eye.Dot(up_corrected)));
 	view.SetRow(2, float4(-forward, eye.Dot(forward)));
 	view.SetRow(3, float4(0.0f, 0.0f, 0.0f, 1.0f));
+
+	return view;
 }
