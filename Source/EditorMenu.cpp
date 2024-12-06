@@ -23,22 +23,12 @@ EditorMenu::~EditorMenu()
 {
 }
 
-void EditorMenu::Draw()
+update_status EditorMenu::Draw()
 {
     static ImGuiWindowData editor_data;
     
     if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("File"))
-        {
-
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("View"))
-        {
-
-            ImGui::EndMenu();
-        }
         if (ImGui::BeginMenu("Help"))
         {
             if (ImGui::MenuItem("Log", "", editor_data.showLog)) { editor_data.showLog = true; }
@@ -48,6 +38,7 @@ void EditorMenu::Draw()
             char menuText[64];
             std::snprintf(menuText, sizeof(menuText), "About %s", ENGINE_NAME);
             if (ImGui::MenuItem(menuText, "", editor_data.ShowAbout)) { editor_data.ShowAbout = true; }
+            if (ImGui::MenuItem("Exit")) { return UPDATE_STOP; }
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
@@ -57,6 +48,7 @@ void EditorMenu::Draw()
     if (editor_data.ShowConsole) myConsole.Draw("Console", &editor_data.ShowConsole);
     if (editor_data.ShowConfiguration) showConfigurationWindow(&editor_data.ShowConfiguration);
     if (editor_data.ShowAbout) showAboutWindow(&editor_data.ShowAbout);
+    return UPDATE_CONTINUE;
 }
 
 void EditorMenu::showConfigurationWindow(bool* p_open)

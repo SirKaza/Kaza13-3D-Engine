@@ -18,7 +18,7 @@ public:
     EditorMenu();
     ~EditorMenu();
 
-    void Draw();
+    update_status Draw();
 	void showAboutWindow(bool* p_open);
 	void showConfigurationWindow(bool* p_open);
     void showCaps() const;

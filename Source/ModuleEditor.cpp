@@ -1,3 +1,4 @@
+#include "Globals.h"
 #include "ModuleEditor.h"
 #include "ModuleWindow.h"
 #include "ModuleOpenGL.h"
@@ -56,7 +57,7 @@ update_status ModuleEditor::PreUpdate()
 
 update_status ModuleEditor::Update()
 {
-    menu->Draw();
+    if (menu->Draw() == UPDATE_STOP) return UPDATE_STOP;
 
     //ImGui::ShowDemoWindow();
 
