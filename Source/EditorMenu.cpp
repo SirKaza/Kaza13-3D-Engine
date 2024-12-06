@@ -8,8 +8,10 @@
 #include "ModuleWindow.h"
 #include "ModuleCamera.h"
 #include "ModuleOpenGL.h"
+#include "ModuleTexture.h"
 #include "SDL.h"
 #include <GL/glew.h>
+#include "DirectXTex.h"
 
 // global variables
 LogEditor myLog;
@@ -140,6 +142,60 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
             if (ImGui::Checkbox("Vsync", &windowFlags.vsync))
                 App->GetWindow()->setVsync(windowFlags.vsync);
             ImGui::EndTable();
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Texture"))
+    {
+        ModuleTexture* texture = App->GetTexture();
+        const DirectX::ScratchImage& image = texture->getScratchImage();
+        const DirectX::TexMetadata& metadata = image.GetMetadata();
+
+        // Display texture info
+        ImGui::Text("Width:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d", metadata.width);
+
+        ImGui::Text("Height:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d", metadata.height);
+
+        ImGui::Text("Format:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", texture->DXGIFormatToString(metadata.format));
+
+        // WRAP modes
+        static int wrapMode = texture->getWrapMode();
+        const char* wrapModes[] = { "CLAMP_TO_BORDER", "CLAMP", "REPEAT", "MIRRORED_REPEAT" };
+        if (ImGui::Combo("WRAP Mode", &wrapMode, wrapModes, IM_ARRAYSIZE(wrapModes)))
+        {
+            texture->setWrapMode(wrapMode);
+        }
+
+        // MAG and MIN filters
+        static int minFilter = texture->getMinFilter();
+        static int magFilter = texture->getMagFilter();
+        const char* filterModes[] = { "NEAREST", "LINEAR" };
+        if (ImGui::Combo("MIN Filter", &minFilter, filterModes, IM_ARRAYSIZE(filterModes)))
+        {
+            texture->setMinFilter(minFilter);
+        }
+
+        if (ImGui::Combo("MAG Filter", &magFilter, filterModes, IM_ARRAYSIZE(filterModes)))
+        {
+            texture->setMagFilter(magFilter);
+        }
+
+        // Mipmap toggle
+        static bool useMipmaps = texture->getUseMipMaps();
+        if (ImGui::Checkbox("Enable Mipmaps", &useMipmaps))
+        {
+            if (useMipmaps) texture->setUseMipMaps();
+            else
+            {
+                minFilter = 0; // GL_NEAREST
+                texture->setMinFilter(minFilter); // Disable mipmaps
+            }
         }
     }
 
