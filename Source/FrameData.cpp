@@ -1,5 +1,4 @@
 #include "FrameData.h"
-#include "Application.h"
 #include <chrono>
 #include <stddef.h>
 #include <vector>
@@ -17,9 +16,8 @@ void UpdateFrameData() {
     // Calculate Frame time
     auto endTime = std::chrono::steady_clock::now();
     std::chrono::duration<double, std::milli> delta = endTime - startTime;
-    
 
-    if (maxFPS > 0) {
+    if (maxFPS != 0) {
         if (delta.count() < target_frame_time) {
             double wait_time = target_frame_time - delta.count();
             std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((target_frame_time - delta.count()))));

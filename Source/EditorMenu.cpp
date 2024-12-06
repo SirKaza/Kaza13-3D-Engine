@@ -17,11 +17,11 @@ ConsoleEditor myConsole;
 
 EditorMenu::EditorMenu()
 {
-    
 }
 
 EditorMenu::~EditorMenu()
-{}
+{
+}
 
 void EditorMenu::Draw()
 {
@@ -67,7 +67,6 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
         return;
     }
 
-    static WindowFlags windowFlags = App->GetWindow()->getInitWindowFlags();
     static ImGuiSliderFlags flags = ImGuiSliderFlags_None;
     const ImGuiSliderFlags flags_for_sliders = flags & ~ImGuiSliderFlags_WrapAround;
 
@@ -466,4 +465,3 @@ void EditorMenu::showCaps() const
     }
         
 }
-

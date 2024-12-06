@@ -56,9 +56,8 @@ update_status ModuleRender::Update()
 		float4x4::RotateZ(pi / 4.0f),
 		float3(2.0f, 1.0f, 1.0f));
 
-	//lookAtTarget();
-
-	view = App->GetCamera()->getViewMatrix();
+	//lookAtTarget(); // locked camera
+	view = App->GetCamera()->getViewMatrix(); // free camera
 
 	float4x4 viewT = getViewTransposed();
 

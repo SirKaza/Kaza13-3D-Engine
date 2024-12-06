@@ -5,12 +5,16 @@
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
 #include "EditorMenu.h"
+#include "Application.h"
 
 ModuleEditor::ModuleEditor() : context(nullptr), menu(nullptr)
 {}
 
 ModuleEditor::~ModuleEditor()
-{}
+{
+    delete menu;
+    menu = nullptr;
+}
 
 bool ModuleEditor::Init()
 {
@@ -33,6 +37,9 @@ bool ModuleEditor::Init()
 
     ImGui_ImplSDL2_InitForOpenGL(SDL_GL_GetCurrentWindow(), SDL_GL_GetCurrentContext());
     ImGui_ImplOpenGL3_Init(GLSL_VERSION);
+
+    menu = new EditorMenu();
+    menu->setWindowFlags(App->GetWindow()->getInitWindowFlags());
 
     return true;
 }
