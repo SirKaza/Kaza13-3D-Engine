@@ -1,8 +1,9 @@
-#include "ModuleRender.h"
+﻿#include "ModuleRender.h"
 #include "Application.h"
 #include "ModuleProgram.h"
 #include "ModuleWindow.h"
 #include "ModuleCamera.h"
+#include "ModuleTexture.h"
 #include "Globals.h"
 #include "FrameData.h"
 #include "Math/float3.h"
@@ -21,11 +22,26 @@ ModuleRender::~ModuleRender()
 
 bool ModuleRender::Init()
 {
-	//float vtx_data[] = { -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
 	float vtx_data[] = {	
-		-1.0f, -1.0f, 0.0f, 
-		1.0f, -1.0f, 0.0f, 
-		0.0f, 1.0f, 0.0f 
+		// First triangle
+		-1.0f, -1.0f, 0.0f, // v0 pos
+		0.0f, 1.0f,         // v0 texcoord
+
+		1.0f, -1.0f, 0.0f,  // v1 pos
+		1.0f, 1.0f,         // v1 texcoord
+
+		1.0f, 1.0f, 0.0f,   // v2 pos
+		1.0f, 0.0f,         // v2 texcoord
+
+		// Second triangle
+		-1.0f, -1.0f, 0.0f, // v0 pos
+		0.0f, 1.0f,          // v0 texcoord
+
+		1.0f, 1.0f, 0.0f,   // v2 pos
+		1.0f, 0.0f,         // v2 texcoord
+
+		-1.0f, 1.0f, 0.0f,  // v3 pos
+		0.0f, 0.0f         // v3 texcoord
 	};
 	
 	glGenBuffers(1, &vbo);
@@ -44,16 +60,13 @@ bool ModuleRender::Init()
 	free(vtx_shader);
 	free(frg_shader);
 
-
-
 	return true;
-
 }
 
 update_status ModuleRender::Update()
 {
 	model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),
-		float4x4::RotateZ(pi / 4.0f),
+		float4x4::RotateZ(0.0f),
 		float3(2.0f, 1.0f, 1.0f));
 
 	//lookAtTarget(); // locked camera
@@ -72,12 +85,16 @@ update_status ModuleRender::Update()
 	// Bind buffer and vertex attributes
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glEnableVertexAttribArray(0);
-	// size = 3 float per vertex
-	// stride = 0 is equivalent to stride = sizeof(float)*3
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // buffer offset
+
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, App->GetTexture()->getTextureID());
 
 	// 1 triangle to draw = 3 vertices
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	UpdateFrameData();
 
