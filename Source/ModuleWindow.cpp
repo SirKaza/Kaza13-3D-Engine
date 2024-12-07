@@ -31,6 +31,14 @@ bool ModuleWindow::Init()
 		//Create window
 		int width = SCREEN_WIDTH;
 		int height = SCREEN_HEIGHT;
+
+		if (SDL_GetDesktopDisplayMode(0, &displayMode) == 0) // success
+		{
+			// set window in relation to desktop size
+			width = displayMode.w * 0.4;
+			height = displayMode.h * 0.4;
+		}
+
 		Uint32 flags = SDL_WINDOW_SHOWN |  SDL_WINDOW_OPENGL;
 
 		if(FULLSCREEN == true)
@@ -56,8 +64,6 @@ bool ModuleWindow::Init()
 				SDL_GL_SetSwapInterval(1);
 				initWindowFlags.vsync = true;
 			}
-
-			SDL_GetCurrentDisplayMode(0, &displayMode);
 		}
 	}
 
@@ -85,11 +91,13 @@ void ModuleWindow::setFullscreen(bool fullscreen)
 	if (fullscreen) {
 		SDL_SetWindowDisplayMode(window, &displayMode);
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+		ENGINE_LOG("Fullscreen enabled");
 	}
 	else {
 		SDL_SetWindowFullscreen(window, 0);
 		screen_surface = SDL_GetWindowSurface(window);
 		App->GetOpenGL()->WindowResized(screen_surface->w, screen_surface->h, SDL_GetWindowID(window));
+		ENGINE_LOG("Fullscreen disabled");
 	}
 }
 
@@ -97,28 +105,57 @@ void ModuleWindow::setBorderless(bool borderless)
 {
 	SDL_bool sdl_borderless = borderless ? SDL_FALSE : SDL_TRUE;
 	SDL_SetWindowBordered(window, sdl_borderless);
+	if (borderless)
+	{
+		ENGINE_LOG("Borderless enabled");
+	}
+	else
+	{
+		ENGINE_LOG("Borderless disabled");
+	}
 }
 
 void ModuleWindow::setResizable(bool resizable)
 {
 	SDL_bool sdl_resizable = resizable ? SDL_TRUE : SDL_FALSE;
 	SDL_SetWindowResizable(window, sdl_resizable);
+	if (resizable)
+	{
+		ENGINE_LOG("Resizable enabled");
+	}
+	else
+	{
+		ENGINE_LOG("Resizable disabled");
+	}
 }
 
 void ModuleWindow::setFullDesktop(bool fullDesktop)
 {
-	if (fullDesktop) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	if (fullDesktop)
+	{
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		ENGINE_LOG("Fullscreen desktop enabled");
+	}
 	else {
 		SDL_SetWindowFullscreen(window, 0);
 		screen_surface = SDL_GetWindowSurface(window);
 		App->GetOpenGL()->WindowResized(screen_surface->w, screen_surface->h, SDL_GetWindowID(window));
+		ENGINE_LOG("Fullscreen desktop disabled");
 	}
 }
 
 void ModuleWindow::setVsync(bool vsync)
 {
-	if (vsync) SDL_GL_SetSwapInterval(1);
-	else SDL_GL_SetSwapInterval(0);
+	if (vsync)
+	{
+		SDL_GL_SetSwapInterval(1);
+		ENGINE_LOG("Vsync enabled");
+	}
+	else
+	{
+		SDL_GL_SetSwapInterval(0);
+		ENGINE_LOG("Vsync disabled");
+	}
 }
 
 void ModuleWindow::setBrightness(float brightness)

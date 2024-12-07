@@ -10,6 +10,7 @@
 #include "Math/float4x4.h"
 #include "Geometry/Frustum.h"
 #include "Math/Quat.h"
+#include "imgui.h"
 
 ModuleCamera::ModuleCamera()
 {
@@ -42,6 +43,10 @@ update_status ModuleCamera::Update()
 {
 	// focus in main window
 	if (SDL_GetKeyboardFocus() != App->GetWindow()->window || SDL_GetMouseFocus() != App->GetWindow()->window)
+		return UPDATE_CONTINUE;
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.WantCaptureMouse) // If ImGui has the mouse, dont make changes
 		return UPDATE_CONTINUE;
 
 	ModuleInput* input = App->GetInput();
