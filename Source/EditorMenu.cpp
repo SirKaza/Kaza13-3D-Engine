@@ -6,6 +6,7 @@
 #include "LogEditor.h"
 #include "Application.h"
 #include "ModuleWindow.h"
+#include "ModuleInput.h"
 #include "ModuleCamera.h"
 #include "ModuleOpenGL.h"
 #include "ModuleTexture.h"
@@ -140,6 +141,40 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
                 App->GetWindow()->setVsync(windowFlags.vsync);
             ImGui::EndTable();
         }
+    }
+
+    if (ImGui::CollapsingHeader("Input"))
+    {
+        // keyboard
+        const Uint8* keyboard = App->GetInput()->getKeyboard();
+        ImGui::Text("Key Q: %s", (keyboard[SDL_SCANCODE_Q] ? "Pressed" : "Not Pressed"));
+        ImGui::Text("Key E: %s", (keyboard[SDL_SCANCODE_E] ? "Pressed" : "Not Pressed"));
+        ImGui::Text("Key W: %s", (keyboard[SDL_SCANCODE_W] ? "Pressed" : "Not Pressed"));
+        ImGui::Text("Key A: %s", (keyboard[SDL_SCANCODE_A] ? "Pressed" : "Not Pressed"));
+        ImGui::Text("Key S: %s", (keyboard[SDL_SCANCODE_S] ? "Pressed" : "Not Pressed"));
+        ImGui::Text("Key D: %s", (keyboard[SDL_SCANCODE_D] ? "Pressed" : "Not Pressed"));
+        ImGui::Text("Key LSHIFT: %s", (keyboard[SDL_SCANCODE_LSHIFT] ? "Pressed" : "Not Pressed"));
+        ImGui::Text("Key LALT: %s", (keyboard[SDL_SCANCODE_LALT] ? "Pressed" : "Not Pressed"));
+
+        // Mouse buttons
+        Uint32 mouseButtons = App->GetInput()->getMouseButtons();
+        ImGui::Text("Left Mouse Button: %s", (mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)) ? "Pressed" : "Not Pressed");
+        ImGui::Text("Right Mouse Button: %s", (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? "Pressed" : "Not Pressed");
+        ImGui::Text("Middle Mouse Button: %s", (mouseButtons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) ? "Pressed" : "Not Pressed");
+
+        // Mouse position
+        int mouseX, mouseY;
+        App->GetInput()->getMousePosition(mouseX, mouseY);
+        ImGui::Text("Mouse Position: (%d, %d)", mouseX, mouseY);
+
+        // Mouse motion
+        int mouseMotionX, mouseMotionY;
+        App->GetInput()->getMouseMotion(mouseMotionX, mouseMotionY);
+        ImGui::Text("Mouse Motion: (%d, %d)", mouseMotionX, mouseMotionY);
+
+        // Mouse wheel
+        int mouseWheelY = App->GetInput()->getMouseWheelY();
+        ImGui::Text("Mouse Wheel: %d", mouseWheelY);
     }
 
     if (ImGui::CollapsingHeader("Texture"))
