@@ -29,5 +29,4 @@ public:
 private:
     WindowFlags windowFlags;
 };
-extern LogEditor myLog;
 extern ConsoleEditor myConsole;

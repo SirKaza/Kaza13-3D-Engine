@@ -1,7 +1,7 @@
 #pragma once
 #include "Globals.h"
 #include "EditorMenu.h"
-#include "LogEditor.h"
+#include "ConsoleEditor.h"
 #include <string>
 
 void log(const char file[], int line, const char* format, ...)
@@ -18,6 +18,6 @@ void log(const char file[], int line, const char* format, ...)
 	OutputDebugString(tmp_string2);
 
 	if (strcmp(format, "<Source:%s> <Type:%s> <Severity:%s> <ID:%d> <Message:%s>\n") != 0) { // not Gl debug spam
-		myLog.AddLog(tmp_string);
+		myConsole.AddLog(tmp_string);
 	}
 }

@@ -14,7 +14,6 @@
 #include "DirectXTex.h"
 
 // global variables
-LogEditor myLog;
 ConsoleEditor myConsole;
 
 EditorMenu::EditorMenu()
@@ -31,22 +30,20 @@ update_status EditorMenu::Draw()
     
     if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("Help"))
+        if (ImGui::BeginMenu("View"))
         {
-            if (ImGui::MenuItem("Log", "", editor_data.showLog)) { editor_data.showLog = true; }
-            if (ImGui::MenuItem("Console", "", editor_data.ShowConsole)) { editor_data.ShowConsole = true; }
-            if (ImGui::MenuItem("Configuration", "", editor_data.ShowConfiguration)) { editor_data.ShowConfiguration = true; }
+            if (ImGui::MenuItem("Console", "", editor_data.ShowConsole)) { editor_data.ShowConsole = !editor_data.ShowConsole; }
+            if (ImGui::MenuItem("Configuration", "", editor_data.ShowConfiguration)) { editor_data.ShowConfiguration = !editor_data.ShowConfiguration; }
             ImGui::Separator();
             char menuText[64];
             std::snprintf(menuText, sizeof(menuText), "About %s", ENGINE_NAME);
-            if (ImGui::MenuItem(menuText, "", editor_data.ShowAbout)) { editor_data.ShowAbout = true; }
-            if (ImGui::MenuItem("Exit")) { return UPDATE_STOP; }
+            if (ImGui::MenuItem(menuText, "", editor_data.ShowAbout)) { editor_data.ShowAbout = !editor_data.ShowAbout; }
+            if (ImGui::MenuItem("Quit")) { return UPDATE_STOP; }
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
     }
 
-    if (editor_data.showLog) myLog.Draw("Log", &editor_data.showLog);
     if (editor_data.ShowConsole) myConsole.Draw("Console", &editor_data.ShowConsole);
     if (editor_data.ShowConfiguration) showConfigurationWindow(&editor_data.ShowConfiguration);
     if (editor_data.ShowAbout) showAboutWindow(&editor_data.ShowAbout);
@@ -337,15 +334,13 @@ void EditorMenu::showAboutWindow(bool* p_open)
     }
     ImGui::Text("%s (%s)", ENGINE_NAME, ENGINE_VERSION);
 
-    ImGui::TextLinkOpenURL("Homepage", "https://github.com/ocornut/imgui");
+    ImGui::TextLinkOpenURL("GitHub", "https://github.com/SirKaza/Kaza13-3D-Engine");
     ImGui::SameLine();
-    ImGui::TextLinkOpenURL("FAQ", "https://github.com/ocornut/imgui/blob/master/docs/FAQ.md");
+    ImGui::TextLinkOpenURL("Readme", "https://github.com/SirKaza/Kaza13-3D-Engine/blob/master/README.md");
     ImGui::SameLine();
-    ImGui::TextLinkOpenURL("Wiki", "https://github.com/ocornut/imgui/wiki");
+    ImGui::TextLinkOpenURL("License", "https://github.com/SirKaza/Kaza13-3D-Engine/blob/master/LICENSE");
     ImGui::SameLine();
-    ImGui::TextLinkOpenURL("Releases", "https://github.com/ocornut/imgui/releases");
-    ImGui::SameLine();
-    ImGui::TextLinkOpenURL("Funding", "https://github.com/ocornut/imgui/wiki/Funding");
+    ImGui::TextLinkOpenURL("Releases", "https://github.com/SirKaza/Kaza13-3D-Engine/releases");
 
     ImGui::Separator();
     ImGui::Text("Game engine developed with OpenGL3 as part of a Video Game Master's Project at UPC.");
