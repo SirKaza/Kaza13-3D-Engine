@@ -169,32 +169,85 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
         const char* wrapModes[] = { "CLAMP_TO_BORDER", "CLAMP", "REPEAT", "MIRRORED_REPEAT" };
         if (ImGui::Combo("WRAP Mode", &wrapMode, wrapModes, IM_ARRAYSIZE(wrapModes)))
         {
-            texture->setWrapMode(wrapMode);
+            switch (wrapMode)
+            {
+            case WrapMode::CLAMP_TO_BORDER:
+                texture->setWrapMode(GL_CLAMP_TO_BORDER);
+                break;
+            case WrapMode::CLAMP:
+                texture->setWrapMode(GL_CLAMP);
+                break;
+            case WrapMode::REPEAT:
+                texture->setWrapMode(GL_REPEAT);
+                break;
+            case WrapMode::MIRRORED_REPEAT:
+                texture->setWrapMode(GL_MIRRORED_REPEAT);
+                break;
+            default:
+                ENGINE_LOG("Error changing Wrap Mode %d", wrapMode);
+                break;
+            }
         }
 
-        // MAG and MIN filters
-        static int minFilter = texture->getMinFilter();
+        // MAG filters
         static int magFilter = texture->getMagFilter();
-        const char* filterModes[] = { "NEAREST", "LINEAR" };
-        if (ImGui::Combo("MIN Filter", &minFilter, filterModes, IM_ARRAYSIZE(filterModes)))
+        const char* magFilterModes[] = { "NEAREST", "LINEAR" };
+        if (ImGui::Combo("MAG Filter", &magFilter, magFilterModes, IM_ARRAYSIZE(magFilterModes)))
         {
-            texture->setMinFilter(minFilter);
+            texture->setMagFilter(magFilter == 0 ? GL_NEAREST : GL_LINEAR);
         }
 
-        if (ImGui::Combo("MAG Filter", &magFilter, filterModes, IM_ARRAYSIZE(filterModes)))
+        // MIN filters
+        static int minFilter = texture->getMinFilter();
+        static bool useMipmaps = texture->getUseMipMaps();
+
+        if (!useMipmaps)
         {
-            texture->setMagFilter(magFilter);
+            const char* minFilterModes[] = { "NEAREST", "LINEAR" };
+            if (ImGui::Combo("MIN Filter", &minFilter, minFilterModes, IM_ARRAYSIZE(minFilterModes)))
+            {
+                texture->setMinFilter(minFilter == 0 ? GL_NEAREST : GL_LINEAR);
+            }
+        }
+        else
+        {
+            const char* minFilterModes[] = { "NEAREST_MIPMAP_NEAREST", "LINEAR_MIPMAP_NEAREST", "NEAREST_MIPMAP_LINEAR", "LINEAR_MIPMAP_LINEAR" };
+            if (ImGui::Combo("MIN Filter", &minFilter, minFilterModes, IM_ARRAYSIZE(minFilterModes)))
+            {
+                switch (minFilter)
+                {
+                case MipMapMode::NEAREST_MIPMAP_NEAREST:
+                    texture->setMinFilter(GL_NEAREST_MIPMAP_NEAREST);
+                    break;
+                case MipMapMode::LINEAR_MIPMAP_NEAREST:
+                    texture->setMinFilter(GL_LINEAR_MIPMAP_NEAREST);
+                    break;
+                case MipMapMode::NEAREST_MIPMAP_LINEAR:
+                    texture->setMinFilter(GL_NEAREST_MIPMAP_LINEAR);
+                    break;
+                case MipMapMode::LINEAR_MIPMAP_LINEAR:
+                    texture->setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+                    break;
+                default:
+                    ENGINE_LOG("Error changing MipMap Mode %d", minFilter);
+                    break;
+                }
+            }
         }
 
         // Mipmap toggle
-        static bool useMipmaps = texture->getUseMipMaps();
         if (ImGui::Checkbox("Enable Mipmaps", &useMipmaps))
         {
-            if (useMipmaps) texture->setUseMipMaps();
+            if (useMipmaps)
+            {
+                texture->setUseMipMaps();
+                minFilter = 0;
+                texture->setMinFilter(GL_NEAREST_MIPMAP_NEAREST);
+            }
             else
             {
                 minFilter = 0; // GL_NEAREST
-                texture->setMinFilter(minFilter); // Disable mipmaps
+                texture->setMinFilter(GL_NEAREST); // Disable mipmaps
             }
         }
     }

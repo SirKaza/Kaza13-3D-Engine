@@ -128,71 +128,52 @@ const int ModuleTexture::getWrapMode() const
 {
 	switch (wrapMode)
 	{
-	case GL_CLAMP_TO_BORDER: return 0;
-	case GL_CLAMP: return 1;
-	case GL_REPEAT: return 2;
-	case GL_MIRRORED_REPEAT: return 3;
-	default: return 2;
+		case GL_CLAMP_TO_BORDER: return 0;
+		case GL_CLAMP: return 1;
+		case GL_REPEAT: return 2;
+		case GL_MIRRORED_REPEAT: return 3;
+		default: return 2;
 	}
 }
 
-void ModuleTexture::setWrapMode(const int newWrapMode)
+void ModuleTexture::setWrapMode(GLenum wrapMode)
 {
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	
-	switch (newWrapMode)
-	{
-	case 0: // GL_CLAMP_TO_BORDER
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		break;
-	case 1: // GL_CLAMP
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		break;
-	case 2: // GL_REPEAT
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		break;
-	case 3: // GL_MIRRORED_REPEAT
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-		break;
-	default:
-		ENGINE_LOG("Error changing Wrap Mode %d", newWrapMode);
-		break;
-	}
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 const int ModuleTexture::getMinFilter() const
 {
-	switch (minFilter)
+	if (!useMipmaps)
 	{
-		case GL_NEAREST: return 0;
-		case GL_LINEAR: return 1;
-		default: return 0;
+		switch (minFilter)
+		{
+			case GL_NEAREST: return 0;
+			case GL_LINEAR: return 1;
+			default: return 0;
+		}
+	}
+	else
+	{
+		switch (minFilter)
+		{
+			case GL_NEAREST_MIPMAP_NEAREST: return 0;
+			case GL_LINEAR_MIPMAP_NEAREST: return 1;
+			case GL_NEAREST_MIPMAP_LINEAR: return 2;
+			case GL_LINEAR_MIPMAP_LINEAR: return 3;
+			default: return 0;
+		}
 	}
 }
 
-void ModuleTexture::setMinFilter(const int newMinFilter)
+void ModuleTexture::setMinFilter(GLenum filter)
 {
 	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	switch (newMinFilter)
-	{
-	case 0: // GL_NEAREST
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		break;
-	case 1: // GL_LINEAR
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		break;
-	default:
-		ENGINE_LOG("Error changing Min Filter %d", newMinFilter);
-		break;
-	}
-
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -206,30 +187,11 @@ const int ModuleTexture::getMagFilter() const
 	}
 }
 
-void ModuleTexture::setMagFilter(const int newMagFilter)
+void ModuleTexture::setMagFilter(GLenum filter)
 {
 	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	switch (newMagFilter)
-	{
-	case 0: // GL_NEAREST
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		break;
-	case 1: // GL_LINEAR
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		break;
-	default:
-		ENGINE_LOG("Error changing Min Filter %d", newMagFilter);
-		break;
-	}
-
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-const bool ModuleTexture::getUseMipMaps() const
-{
-	if (useMipmaps) return true;
-	else return false;
 }
 
 void ModuleTexture::setUseMipMaps()
@@ -237,6 +199,7 @@ void ModuleTexture::setUseMipMaps()
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	glGenerateMipmap(GL_TEXTURE_2D);
+	glGenerateTextureMipmap(textureID);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
