@@ -44,7 +44,7 @@
       <Filter>External\Exercises</Filter>
     </ClCompile>
     <ClCompile Include="FrameData.cpp">
-      <Filter>Modules\Editor\MyMenuEditor</Filter>
+      <Filter>Modules\Editor\MenuEditor</Filter>
     </ClCompile>
     <ClCompile Include="MathGeoLib\include\Geometry\Sphere.cpp">
       <Filter>External\MathGeoLib</Filter>
@@ -152,11 +152,12 @@
       <Filter>Modules\Camera</Filter>
     </ClCompile>
     <ClCompile Include="EditorMenu.cpp">
-      <Filter>Modules\Editor\MyMenuEditor</Filter>
+      <Filter>Modules\Editor\MenuEditor</Filter>
     </ClCompile>
     <ClCompile Include="ModuleTexture.cpp">
       <Filter>Modules\Texture</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -210,10 +211,10 @@
       <Filter>Modules\Program</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleEditor.h">
-      <Filter>Modules\Editor\MyMenuEditor</Filter>
+      <Filter>Modules\Editor\MenuEditor</Filter>
     </ClInclude>
     <ClInclude Include="LogEditor.h">
-      <Filter>Modules\Editor\MyMenuEditor</Filter>
+      <Filter>Modules\Editor\MenuEditor</Filter>
     </ClInclude>
     <ClInclude Include="vec3.h">
       <Filter>External\Exercises</Filter>
@@ -222,7 +223,7 @@
       <Filter>External\Exercises</Filter>
     </ClInclude>
     <ClInclude Include="FrameData.h">
-      <Filter>Modules\Editor\MyMenuEditor</Filter>
+      <Filter>Modules\Editor\MenuEditor</Filter>
     </ClInclude>
     <ClInclude Include="MathGeoLib\include\MathGeoLib.h">
       <Filter>External\MathGeoLib</Filter>
@@ -420,10 +421,14 @@
       <Filter>Modules\Camera</Filter>
     </ClInclude>
     <ClInclude Include="EditorMenu.h">
-      <Filter>Modules\Editor\MyMenuEditor</Filter>
+      <Filter>Modules\Editor\MenuEditor</Filter>
     </ClInclude>
     <ClInclude Include="ModuleTexture.h">
       <Filter>Modules\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="tinygltf-2.9.3\tiny_gltf.h">
+      <Filter>External\tinygltf</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -441,9 +446,6 @@
     </Filter>
     <Filter Include="Modules\Program">
       <UniqueIdentifier>{3142aaa9-9b87-49fc-b6d5-e1d450bc17de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Modules\Editor\MyMenuEditor">
-      <UniqueIdentifier>{a45a0468-74da-400e-b59f-f8b4228451e8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Modules\OpenGL">
       <UniqueIdentifier>{e6666698-c327-4209-8b6b-aff1e25faec3}</UniqueIdentifier>
@@ -474,6 +476,12 @@
     </Filter>
     <Filter Include="Modules\Texture">
       <UniqueIdentifier>{562d07f9-6f28-474a-906e-09fc80e5e361}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Editor\MenuEditor">
+      <UniqueIdentifier>{a45a0468-74da-400e-b59f-f8b4228451e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\tinygltf">
+      <UniqueIdentifier>{c7611574-7801-40d2-93f1-21e0da716f19}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

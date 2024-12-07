@@ -103,7 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\DirectXTex\DirectXTex;.\MathGeoLib\include;.\ImGui;.\SDL\include;glew-2.1.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\tinygltf-2.9.3;.\DirectXTex\DirectXTex;.\MathGeoLib\include;.\ImGui;.\SDL\include;glew-2.1.0\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -137,7 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\DirectXTex\DirectXTex;.\MathGeoLib\include;.\ImGui;.\SDL\include;glew-2.1.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\tinygltf-2.9.3;.\DirectXTex\DirectXTex;.\MathGeoLib\include;.\ImGui;.\SDL\include;glew-2.1.0\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -193,6 +193,7 @@
     <ClCompile Include="MathGeoLib\include\Math\SSEMath.cpp" />
     <ClCompile Include="MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModuleCamera.cpp" />
     <ClCompile Include="ModuleDebugDraw.cpp" />
     <ClCompile Include="ModuleEditor.cpp" />
@@ -283,6 +284,7 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="ModuleCamera.h" />
     <ClInclude Include="ModuleDebugDraw.h" />
@@ -294,6 +296,7 @@
     <ClInclude Include="ModuleTexture.h" />
     <ClInclude Include="ModuleWindow.h" />
     <ClInclude Include="string.h" />
+    <ClInclude Include="tinygltf-2.9.3\tiny_gltf.h" />
     <ClInclude Include="vec3.h" />
   </ItemGroup>
   <ItemGroup>
