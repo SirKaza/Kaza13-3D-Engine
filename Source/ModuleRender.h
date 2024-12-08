@@ -18,6 +18,7 @@ public:
 
 	float4x4 getModelMatrix() const { return modelMatrix; }
 	float4x4 getViewMatrix() const { return viewMatrix; }
+	unsigned getProgramID() const { return program_id; }
 
 private:
 	unsigned vbo;

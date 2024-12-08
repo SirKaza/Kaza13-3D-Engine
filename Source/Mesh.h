@@ -13,11 +13,13 @@ public:
 	void load(const tinygltf::Model& model, const tinygltf::Mesh& srcMesh, const tinygltf::Primitive& primitive);
 	void render();
 	void loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive);
+	void createVAO();
 
 
 private:
-	unsigned vbo ;
+	unsigned vao;
+	unsigned vbo;
 	unsigned ebo;
-	unsigned vertexCount ;
+	unsigned numIndices;
 };
 

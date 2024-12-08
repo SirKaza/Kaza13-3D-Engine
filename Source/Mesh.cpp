@@ -9,7 +9,7 @@
 #include "Application.h"
 #include "ModuleRender.h"
 
-Mesh::Mesh() : vbo(0), ebo(0), vertexCount(0)
+Mesh::Mesh() : vbo(0), ebo(0), numIndices(0)
 {}
 
 Mesh::~Mesh()
@@ -32,7 +32,7 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 		const tinygltf::Buffer& posBuffer = model.buffers[posView.buffer];
 		const unsigned char* bufferPos = &(posBuffer.data[posAcc.byteOffset + posView.byteOffset]);
 
-		vertexCount = posAcc.count;
+		numIndices = posAcc.count;
 
 		glGenBuffers(1, &vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -48,26 +48,17 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	}
 
 	loadEBO(model, mesh, primitive);
+	createVAO();
 }
 
 void Mesh::render()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glUseProgram(App->GetRender()->getProgramID());
 
-	if (ebo != 0) // indices
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
-	}
-	else // no indices
-	{
-		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-	}
-	
-	glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
+	glBindVertexArray(vao);
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);
+
+	glBindVertexArray(0);
 }
 
 void Mesh::loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
@@ -79,6 +70,7 @@ void Mesh::loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, con
 		const unsigned char* buffer = &(model.buffers[indView.buffer].data[indAcc.byteOffset +
 			indView.byteOffset]);
 		unsigned int num_indices = indAcc.count;
+		numIndices = indAcc.count;
 
 		glGenBuffers(1, &ebo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
@@ -102,5 +94,23 @@ void Mesh::loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, con
 		}
 		glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 	}
+}
+
+void Mesh::createVAO()
+{
+	glGenVertexArrays(1, &vao);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * 3 * numIndices));
+
+	glBindVertexArray(0);
+	//glDisableVertexAttribArray(1);
 }
 
