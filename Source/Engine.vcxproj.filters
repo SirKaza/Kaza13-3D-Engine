@@ -158,6 +158,7 @@
       <Filter>Modules\Texture</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -430,6 +431,10 @@
     <ClInclude Include="tinygltf-2.9.3\tiny_gltf.h">
       <Filter>External\tinygltf</Filter>
     </ClInclude>
+    <ClInclude Include="tinygltf-2.9.3\json.hpp">
+      <Filter>External\tinygltf</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Modules">

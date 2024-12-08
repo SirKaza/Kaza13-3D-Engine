@@ -1,6 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Math/float4x4.h"
+#include "Model.h"
 
 class ModuleRender : public Module
 {
@@ -13,15 +14,16 @@ public:
 	bool CleanUp();
 
 	void lookAtTarget();
-	float4x4 getViewTransposed() const { return view.Transposed(); }
+	float4x4 getViewMatrixTransposed() const { return viewMatrix.Transposed(); }
 
-	float4x4 getModel() const { return model; }
-	float4x4 getView() const { return view; }
+	float4x4 getModelMatrix() const { return modelMatrix; }
+	float4x4 getViewMatrix() const { return viewMatrix; }
 
 private:
 	unsigned vbo;
 	unsigned program_id;
 
-	float4x4 model, view;
+	float4x4 modelMatrix, viewMatrix;
+	Model model;
 };
 
