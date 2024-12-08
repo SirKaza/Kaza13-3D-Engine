@@ -26,7 +26,7 @@ bool ModuleCamera::Init()
 {
 	frustum.type = FrustumType::PerspectiveFrustum;
 
-	frustum.pos = float3(0.0f, 4.0f, 8.0f);
+	frustum.pos = float3(0.0f, 2.0f, 8.0f);
 	frustum.front = -float3::unitZ;
 	frustum.up = float3::unitY;
 

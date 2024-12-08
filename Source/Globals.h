@@ -35,7 +35,7 @@ struct WindowFlags
 
 // Camera Config
 #define CAMERA_SPEED 3.0f
-#define ROTATE_SENSITIVITY 0.2f
+#define ROTATE_SENSITIVITY 0.1f
 #define DRAG_SENSITIVITY 0.01f
 #define ZOOM_SPEED 0.05f
 #define WHEEL_SPEED 0.5f
