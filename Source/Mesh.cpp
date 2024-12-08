@@ -46,6 +46,8 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 		}
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
+
+	loadEBO(model, mesh, primitive);
 }
 
 void Mesh::render()
@@ -53,13 +55,52 @@ void Mesh::render()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+	if (ebo != 0) // indices
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+	}
+	else // no indices
+	{
+		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+	}
+	
 	glDisableVertexAttribArray(0);
 	//glDisableVertexAttribArray(1);
 }
 
 void Mesh::loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
 {
+	if (primitive.indices >= 0)
+	{
+		const tinygltf::Accessor& indAcc = model.accessors[primitive.indices];
+		const tinygltf::BufferView& indView = model.bufferViews[indAcc.bufferView];
+		const unsigned char* buffer = &(model.buffers[indView.buffer].data[indAcc.byteOffset +
+			indView.byteOffset]);
+		unsigned int num_indices = indAcc.count;
 
+		glGenBuffers(1, &ebo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indAcc.count, nullptr, GL_STATIC_DRAW);
+		unsigned int* ptr = reinterpret_cast<unsigned int*>(glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
+
+		if (indAcc.componentType == TINYGLTF_PARAMETER_TYPE_UNSIGNED_INT) // unsigned int
+		{
+			const uint32_t* bufferInd = reinterpret_cast<const uint32_t*>(buffer);
+			for (uint32_t i = 0; i < num_indices; ++i) ptr[i] = bufferInd[i];
+		}
+		else if (indAcc.componentType == TINYGLTF_PARAMETER_TYPE_UNSIGNED_SHORT) // unsigned short
+		{
+			const uint16_t* bufferInd = reinterpret_cast<const uint16_t*>(buffer);
+			for (uint16_t i = 0; i < num_indices; ++i) ptr[i] = static_cast<unsigned int>(bufferInd[i]); // cast from short to int
+		}
+		else if (indAcc.componentType == TINYGLTF_PARAMETER_TYPE_UNSIGNED_BYTE) // unsigned byte
+		{
+			const uint8_t* bufferInd = reinterpret_cast<const uint8_t*>(buffer);
+			for (uint8_t i = 0; i < num_indices; ++i) ptr[i] = static_cast<unsigned int>(bufferInd[i]); // cast from byte to int
+		}
+		glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+	}
 }
 

@@ -35,7 +35,8 @@ bool ModuleRender::Init()
 	free(vtx_shader);
 	free(frg_shader);
 
-	model.load("TriangleWithoutIndices.gltf");
+	//model.load("TriangleWithoutIndices.gltf");
+	model.load("Triangle.gltf");
 
 	return true;
 }
