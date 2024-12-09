@@ -27,7 +27,9 @@ public:
 	update_status Update();
 	bool CleanUp();
 
-	bool loadTextureToCPU();
+	unsigned int load(const char* imagePath);
+	bool loadTextureToCPU(const char* imagePath);
+
 	GLuint getTextureID() const { return textureID; }
 
 	const DirectX::ScratchImage& getScratchImage() const { return *scratchImage; }
@@ -48,7 +50,6 @@ public:
 
 private:
 	std::unique_ptr<DirectX::ScratchImage> scratchImage;
-	const wchar_t* imagePath = L"Baboon.png"; // wide-character
 
 	GLuint textureID = 0;
 	const GLenum wrapMode = GL_REPEAT;

@@ -2,6 +2,7 @@
 #include "ModuleTexture.h"
 #include "DirectXTex.h"
 #include <GL/glew.h>
+#include <filesystem>
 
 ModuleTexture::ModuleTexture() : textureID(0)
 {}
@@ -11,8 +12,24 @@ ModuleTexture::~ModuleTexture()
 
 bool ModuleTexture::Init() 
 {
-	if (!loadTextureToCPU()) 
-		return false;
+	return true;
+}
+
+update_status ModuleTexture::Update()
+{
+	return UPDATE_CONTINUE;
+}
+
+bool ModuleTexture::CleanUp()
+{
+	return true;
+}
+
+unsigned int ModuleTexture::load(const char* imagePath)
+{
+	// const wchar_t* imagePath = L"Baboon.png"; // wide-character
+	if (!loadTextureToCPU(imagePath))
+		return 0;
 
 	const DirectX::TexMetadata metadata = scratchImage->GetMetadata();
 
@@ -20,25 +37,25 @@ bool ModuleTexture::Init()
 
 	switch (metadata.format)
 	{
-	case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
-	case DXGI_FORMAT_R8G8B8A8_UNORM:
-		internalFormat = GL_RGBA8;
-		format = GL_RGBA;
-		type = GL_UNSIGNED_BYTE;
-		break;
-	case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
-	case DXGI_FORMAT_B8G8R8A8_UNORM:
-		internalFormat = GL_RGBA8;
-		format = GL_BGRA;
-		type = GL_UNSIGNED_BYTE;
-		break;
-	case DXGI_FORMAT_B5G6R5_UNORM:
-		internalFormat = GL_RGB8;
-		format = GL_BGR;
-		type = GL_UNSIGNED_BYTE;
-		break;
-	default:
-		assert(false && "Unsupported format");
+		case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+		case DXGI_FORMAT_R8G8B8A8_UNORM:
+			internalFormat = GL_RGBA8;
+			format = GL_RGBA;
+			type = GL_UNSIGNED_BYTE;
+			break;
+		case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+		case DXGI_FORMAT_B8G8R8A8_UNORM:
+			internalFormat = GL_RGBA8;
+			format = GL_BGRA;
+			type = GL_UNSIGNED_BYTE;
+			break;
+		case DXGI_FORMAT_B5G6R5_UNORM:
+			internalFormat = GL_RGB8;
+			format = GL_BGR;
+			type = GL_UNSIGNED_BYTE;
+			break;
+		default:
+			assert(false && "Unsupported format");
 	}
 
 	// Generate and link texture object
@@ -66,43 +83,27 @@ bool ModuleTexture::Init()
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	ENGINE_LOG("Texture loaded successfully (ID: %u)", textureID);
-
-	return true;
+	ENGINE_LOG("Texture loaded successfully (ID: %u)", textureID);	
+	return textureID;
 }
 
-update_status ModuleTexture::Update()
+bool ModuleTexture::loadTextureToCPU(const char* imagePath)
 {
-	return UPDATE_CONTINUE;
-}
-
-bool ModuleTexture::CleanUp()
-{
-	if (textureID != 0)
-	{
-		glDeleteTextures(1, &textureID);
-		textureID = 0;
-		ENGINE_LOG("Texture cleaned up successfully");
-	}
-	return true;
-}
-
-bool ModuleTexture::loadTextureToCPU()
-{
+	std::filesystem::path wImagePath = imagePath; // into std::filesystem::path
 	scratchImage = std::make_unique<DirectX::ScratchImage>();
-	HRESULT hr = DirectX::LoadFromDDSFile(imagePath, DirectX::DDS_FLAGS_NONE, nullptr, *scratchImage);
+	HRESULT hr = DirectX::LoadFromDDSFile(wImagePath.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, *scratchImage);
 	if (SUCCEEDED(hr))
 	{
 		return true;
 	}
 
-	hr = DirectX::LoadFromTGAFile(imagePath, nullptr, *scratchImage);
+	hr = DirectX::LoadFromTGAFile(wImagePath.c_str(), nullptr, *scratchImage);
 	if (SUCCEEDED(hr))
 	{
 		return true;
 	}
 
-	hr = DirectX::LoadFromWICFile(imagePath, DirectX::WIC_FLAGS_NONE, nullptr, *scratchImage);
+	hr = DirectX::LoadFromWICFile(wImagePath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *scratchImage);
 	if (SUCCEEDED(hr))
 	{
 		return true;

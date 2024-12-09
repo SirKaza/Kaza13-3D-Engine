@@ -15,7 +15,7 @@
 #include <GL/glew.h>
 #include "Model.h"
 
-ModuleRender::ModuleRender() : vbo(0), program_id(0)
+ModuleRender::ModuleRender() : program_id(0)
 {}
 
 ModuleRender::~ModuleRender()
@@ -36,7 +36,8 @@ bool ModuleRender::Init()
 	free(frg_shader);
 
 	//model.load("TriangleWithoutIndices.gltf");
-	model.load("Triangle.gltf");
+	//model.load("Triangle.gltf");
+	model.load("Box.gltf");
 
 	return true;
 }
@@ -69,8 +70,6 @@ update_status ModuleRender::Update()
 
 bool ModuleRender::CleanUp()
 {
-	glDeleteBuffers(1, &vbo);
-
 	return true;
 }
 

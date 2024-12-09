@@ -15,7 +15,6 @@ public:
 	void loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive);
 	void createVAO();
 
-
 private:
 	unsigned vao;
 	unsigned vbo;

@@ -9,15 +9,30 @@
 #include "Application.h"
 #include "ModuleRender.h"
 
-Mesh::Mesh() : vbo(0), ebo(0), numIndices(0)
+Mesh::Mesh() : vao(0), vbo(0), ebo(0), numIndices(0)
 {}
 
 Mesh::~Mesh()
 {
+	glBindVertexArray(0);
+
+	if (vao != 0)
+	{
+		glDeleteVertexArrays(1, &vao);
+		vao = 0;
+	}
+
 	if (vbo != 0)
+	{
 		glDeleteBuffers(1, &vbo);
+		vbo = 0;
+	}
+		
 	if (ebo != 0)
+	{
 		glDeleteBuffers(1, &ebo);
+		ebo = 0;
+	}
 }
 
 void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
