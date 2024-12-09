@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 #include "SDL/include/SDL.h"
 #include "Math/float3.h"
+#include "Math/float2.h"
 #include "Application.h"
 #include "ModuleRender.h"
 
@@ -38,6 +39,8 @@ Mesh::~Mesh()
 void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
 {
 	const auto& itPos = primitive.attributes.find("POSITION");
+	const auto& itTex = primitive.attributes.find("TEXCOORD_0");
+
 	if (itPos != primitive.attributes.end())
 	{
 		const tinygltf::Accessor& posAcc = model.accessors[itPos->second];
@@ -48,16 +51,60 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 		const unsigned char* bufferPos = &(posBuffer.data[posAcc.byteOffset + posView.byteOffset]);
 
 		numIndices = posAcc.count;
+		materialIndex = primitive.material;
+
+		// uvs
+		bool hasUVs = (itTex != primitive.attributes.end());
+		const tinygltf::Accessor* uvAcc = nullptr;
+		const tinygltf::BufferView* uvView = nullptr;
+		const unsigned char* bufferUV = nullptr;
+
+		if (hasUVs)
+		{
+			uvAcc = &model.accessors[itTex->second];
+			SDL_assert(uvAcc->type == TINYGLTF_TYPE_VEC2);
+			SDL_assert(uvAcc->componentType == GL_FLOAT);
+			uvView = &model.bufferViews[uvAcc->bufferView];
+			const tinygltf::Buffer& uvBuffer = model.buffers[uvView->buffer];
+			bufferUV = &(uvBuffer.data[uvAcc->byteOffset + uvView->byteOffset]);
+		}
+
+		size_t totalSize = vertexSize * posAcc.count;
 
 		glGenBuffers(1, &vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * posAcc.count, nullptr, GL_STATIC_DRAW);
-		float3* ptr = reinterpret_cast<float3*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
-		size_t stride = (posView.byteStride > 0) ? posView.byteStride : sizeof(float) * 3;
+		glBufferData(GL_ARRAY_BUFFER, totalSize, nullptr, GL_STATIC_DRAW);
+
+		float* ptr = reinterpret_cast<float*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+
+		size_t posStride = (posView.byteStride > 0) ? posView.byteStride : sizeof(float) * 3;
+		size_t uvStride = (hasUVs && uvView->byteStride > 0) ? uvView->byteStride : sizeof(float) * 2;
+
 		for (size_t i = 0; i < posAcc.count; ++i)
 		{
-			ptr[i] = *reinterpret_cast<const float3*>(bufferPos);
-			bufferPos += stride;
+			// Assign Position 
+			float3 position = *reinterpret_cast<const float3*>(bufferPos);
+			ptr[0] = position.x;
+			ptr[1] = position.y;
+			ptr[2] = position.z;
+			bufferPos += posStride;
+
+			// Assign TexCoords
+			if (hasUVs)
+			{
+				float2 uv = *reinterpret_cast<const float2*>(bufferUV);
+				ptr[3] = uv.x;
+				ptr[4] = uv.y;
+				bufferUV += uvStride;
+			}
+			else
+			{
+				// Default values
+				ptr[3] = 0.0f;
+				ptr[4] = 0.0f;
+			}
+			
+			ptr += numOfValues;
 		}
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
@@ -66,9 +113,15 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	createVAO();
 }
 
-void Mesh::render()
+void Mesh::render(const std::vector<unsigned>& textures)
 {
 	glUseProgram(App->GetRender()->getProgramID());
+
+	if (materialIndex < textures.size()) // index not invalid
+	{
+		glActiveTexture(GL_TEXTURE0 + materialIndex);
+		glBindTexture(GL_TEXTURE_2D, textures[materialIndex]);
+	}
 
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);
@@ -114,18 +167,18 @@ void Mesh::loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, con
 void Mesh::createVAO()
 {
 	glGenVertexArrays(1, &vao);
-
 	glBindVertexArray(vao);
+
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)0);
 
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * 3 * numIndices));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(sizeof(float) * 3));
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
 	glBindVertexArray(0);
-	//glDisableVertexAttribArray(1);
 }
 

@@ -11,7 +11,7 @@ public:
 	~Mesh();
 
 	void load(const tinygltf::Model& model, const tinygltf::Mesh& srcMesh, const tinygltf::Primitive& primitive);
-	void render();
+	void render(const std::vector<unsigned>& textures);
 	void loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive);
 	void createVAO();
 
@@ -20,5 +20,8 @@ private:
 	unsigned vbo;
 	unsigned ebo;
 	unsigned numIndices;
+	unsigned materialIndex;
+	size_t numOfValues = 5;
+	size_t vertexSize = sizeof(float) * numOfValues;
 };
 

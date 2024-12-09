@@ -68,7 +68,7 @@ void Model::render()
 {
 	for (Mesh* mesh : meshes)
 	{
-		mesh->render();
+		mesh->render(textures);
 	}
 }
 

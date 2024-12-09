@@ -37,7 +37,9 @@ bool ModuleRender::Init()
 
 	//model.load("TriangleWithoutIndices.gltf");
 	//model.load("Triangle.gltf");
-	model.load("Box.gltf");
+	//model.load("Box.gltf");
+	//model.load("BoxInterleaved.gltf");
+	model.load("BoxTextured.gltf");
 
 	return true;
 }
