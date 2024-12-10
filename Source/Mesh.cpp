@@ -9,6 +9,9 @@
 #include "Math/float2.h"
 #include "Application.h"
 #include "ModuleRender.h"
+#include "Math/float4x4.h"
+#include "Math/float4.h"
+#include "Math/Quat.h"
 
 Mesh::Mesh() : vao(0), vbo(0), ebo(0), numIndices(0)
 {}
@@ -36,7 +39,7 @@ Mesh::~Mesh()
 	}
 }
 
-void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
+void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive, size_t nodeIndex)
 {
 	const auto& itPos = primitive.attributes.find("POSITION");
 	const auto& itTex = primitive.attributes.find("TEXCOORD_0");
@@ -109,6 +112,7 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
 
+	loadModelMatrix(model, mesh, nodeIndex);
 	loadEBO(model, mesh, primitive);
 	createVAO();
 }
@@ -116,6 +120,7 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 void Mesh::render(const std::vector<unsigned>& textures)
 {
 	glUseProgram(App->GetRender()->getProgramID());
+	glUniformMatrix4fv(0, 1, GL_TRUE, &modelMatrix[0][0]);
 
 	if (materialIndex < textures.size()) // index not invalid
 	{
@@ -182,3 +187,38 @@ void Mesh::createVAO()
 	glBindVertexArray(0);
 }
 
+void Mesh::loadModelMatrix(const tinygltf::Model& model, const tinygltf::Mesh& mesh, size_t nodeIndex)
+{
+	const tinygltf::Node& node = model.nodes[nodeIndex];
+
+	if (!node.matrix.empty())
+	{
+		modelMatrix.Set((float*)node.matrix.data()); 
+	}
+	else
+	{
+		// Translation
+		float3 translation(0.0f, 0.0f, 0.0f);
+		if (!node.translation.empty() && node.translation.size() == 3)
+		{
+			translation = float3(node.translation[0], node.translation[1], node.translation[2]);
+		}
+
+		// Rotation
+		float4 rotationQuat(0.0f, 0.0f, 0.0f, 1.0f);
+		if (!node.rotation.empty() && node.rotation.size() == 4)
+		{
+			rotationQuat = float4(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]);
+		}
+		float4x4 rotationMatrix = Quat(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w).ToFloat4x4();
+
+		// Scale
+		float3 scale(1.0f, 1.0f, 1.0f);
+		if (!node.scale.empty() && node.scale.size() == 3)
+		{
+			scale = float3(node.scale[0], node.scale[1], node.scale[2]);
+		}
+
+		modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
+	}
+}

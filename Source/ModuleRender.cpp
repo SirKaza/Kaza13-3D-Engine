@@ -39,27 +39,22 @@ bool ModuleRender::Init()
 	//model.load("Triangle.gltf");
 	//model.load("Box.gltf");
 	//model.load("BoxInterleaved.gltf");
-	model.load("BoxTextured.gltf");
+	//model.load("BoxTextured.gltf");
+	model.load("BakerHouse.gltf");
 
 	return true;
 }
 
 update_status ModuleRender::Update()
 {
-	modelMatrix = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),
-		float4x4::RotateZ(0.0f),
-		float3(1.0f, 1.0f, 1.0f));
-
 	//lookAtTarget(); // locked camera
 	viewMatrix = App->GetCamera()->getViewMatrix(); // free camera
-
 	float4x4 viewMatrixT = getViewMatrixTransposed();
-
 	float4x4 proj = App->GetCamera()->getProjectionMatrix();
 
 	// Pass MVP as uniform to Vertex shader
 	glUseProgram(program_id);
-	glUniformMatrix4fv(0, 1, GL_TRUE, &modelMatrix[0][0]);
+
 	glUniformMatrix4fv(1, 1, GL_FALSE, &viewMatrixT[0][0]);
 	glUniformMatrix4fv(2, 1, GL_TRUE, &proj[0][0]);
 

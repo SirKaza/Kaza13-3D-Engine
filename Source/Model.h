@@ -1,6 +1,7 @@
 #pragma once
 #include "Mesh.h"
 #include <vector>
+#include "Math/float4x4.h"
 
 class tinygltf::Model;
 

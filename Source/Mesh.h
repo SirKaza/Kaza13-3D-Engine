@@ -3,6 +3,7 @@
 #define TINYGLTF_NO_STB_IMAGE
 #define TINYGLTF_NO_EXTERNAL_IMAGE 
 #include "tiny_gltf.h"
+#include "Math/float4x4.h"
 
 class Mesh
 {
@@ -10,10 +11,11 @@ public:
 	Mesh();
 	~Mesh();
 
-	void load(const tinygltf::Model& model, const tinygltf::Mesh& srcMesh, const tinygltf::Primitive& primitive);
+	void load(const tinygltf::Model& model, const tinygltf::Mesh& srcMesh, const tinygltf::Primitive& primitive, size_t nodeIndex);
 	void render(const std::vector<unsigned>& textures);
 	void loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive);
 	void createVAO();
+	void loadModelMatrix(const tinygltf::Model& model, const tinygltf::Mesh& mesh, size_t nodeIndex);
 
 private:
 	unsigned vao;
@@ -23,5 +25,6 @@ private:
 	unsigned materialIndex;
 	size_t numOfValues = 5;
 	size_t vertexSize = sizeof(float) * numOfValues;
+	float4x4 modelMatrix;
 };
 

@@ -15,6 +15,7 @@ Model::Model()
 
 Model::~Model()
 {
+	ENGINE_LOG("%d Texture cleaned up successfully", textures.size());
 	for (unsigned &textureID : textures)
 	{
 		if (textureID != 0)
@@ -24,23 +25,21 @@ Model::~Model()
 		}
 	}
 	textures.clear();
-	ENGINE_LOG("Texture cleaned up successfully");
 
+	ENGINE_LOG("%d Meshes cleaned up successfully", meshes.size());
 	for (Mesh* mesh : meshes)
 	{
 		delete mesh;
 	}
 	meshes.clear();
-	ENGINE_LOG("Meshes cleaned up successfully");
-
 }
 
 void Model::load(const char* assetFileName)
 {
 	tinygltf::TinyGLTF gltfContext;
 	tinygltf::Model model;
-
 	std::string error, warning;
+
 	bool loadOk = gltfContext.LoadASCIIFromFile(&model, &error, &warning, assetFileName);
 	if (!loadOk)
 	{
@@ -57,7 +56,7 @@ void Model::load(const char* assetFileName)
 			for (const tinygltf::Primitive& primitive : srcMesh.primitives)
 			{
 				Mesh* mesh = new Mesh();
-				mesh->load(model, srcMesh, primitive);
+				mesh->load(model, srcMesh, primitive, meshes.size());
 				meshes.push_back(mesh);
 			}
 		}

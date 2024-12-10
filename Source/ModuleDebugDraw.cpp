@@ -615,17 +615,19 @@ update_status  ModuleDebugDraw::Update()
 {
     float4x4 view = App->GetRender()->getViewMatrix();
     float4x4 proj = App->GetCamera()->getProjectionMatrix();
-    float4x4 vpMatrix = proj * view;
     int w = App->GetWindow()->screen_surface->w;
     int h = App->GetWindow()->screen_surface->h;
-    
-    dd::line(float3::zero, float3::unitX, dd::colors::Red);
-    dd::line(float3::zero, float3::unitY, dd::colors::Green);
-    dd::line(float3::zero, float3::unitZ, dd::colors::Blue);
-    dd::projectedText("X", float3(1.0f, 0.0f, 0.0f), dd::colors::Red, vpMatrix, 0, 0, w, h);
-    dd::projectedText("Y", float3(0.0f, 1.0f, 0.0f), dd::colors::Green, vpMatrix, 0, 0, w, h);
-    dd::projectedText("Z", float3(0.0f, 0.0f, 1.0f), dd::colors::Blue, vpMatrix, 0, 0, w, h);
 
+    // Other AXIS with X,Y,Z letters
+    //float4x4 vpMatrix = proj * view;
+    //dd::line(float3::zero, float3::unitX, dd::colors::Red);
+    //dd::line(float3::zero, float3::unitY, dd::colors::Green);
+    //dd::line(float3::zero, float3::unitZ, dd::colors::Blue);
+    //dd::projectedText("X", float3(1.0f, 0.0f, 0.0f), dd::colors::Red, vpMatrix, 0, 0, w, h);
+    //dd::projectedText("Y", float3(0.0f, 1.0f, 0.0f), dd::colors::Green, vpMatrix, 0, 0, w, h);
+    //dd::projectedText("Z", float3(0.0f, 0.0f, 1.0f), dd::colors::Blue, vpMatrix, 0, 0, w, h);
+
+    dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
     dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, dd::colors::Gray);
 
     Draw(view, proj, w, h);
