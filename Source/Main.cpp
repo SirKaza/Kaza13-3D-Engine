@@ -1,3 +1,5 @@
+#include <vld.h> // memory leaks check
+
 #include <stdlib.h>
 #include "Application.h"
 #include "ModuleOpenGL.h"

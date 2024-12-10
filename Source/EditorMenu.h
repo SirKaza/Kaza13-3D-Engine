@@ -1,8 +1,6 @@
 #pragma once
 #include "Globals.h"
-
-class LogEditor;
-class ConsoleEditor;
+#include "ConsoleEditor.h"
 
 struct ImGuiWindowData
 {
@@ -29,4 +27,6 @@ public:
 private:
     WindowFlags windowFlags;
 };
+
+// global var
 extern ConsoleEditor myConsole;

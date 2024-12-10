@@ -9,7 +9,6 @@ std::vector<float> ms_log;
 std::chrono::steady_clock::time_point startTime;
 int maxFPS = 60;
 
-// Improvements: SDL_Delay() & VSYNC
 void UpdateFrameData() {
     float target_frame_time = 1000.0f / maxFPS; // 5Hz = 200ms
 

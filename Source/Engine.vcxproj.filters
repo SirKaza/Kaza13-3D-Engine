@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="log.cpp" />
-    <ClCompile Include="Main.cpp" />
     <ClCompile Include="ImGui\imgui.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
@@ -42,9 +39,6 @@
     </ClCompile>
     <ClCompile Include="string.cpp">
       <Filter>External\Exercises</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameData.cpp">
-      <Filter>Modules\Editor\MenuEditor</Filter>
     </ClCompile>
     <ClCompile Include="MathGeoLib\include\Geometry\Sphere.cpp">
       <Filter>External\MathGeoLib</Filter>
@@ -151,18 +145,32 @@
     <ClCompile Include="ModuleCamera.cpp">
       <Filter>Modules\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="EditorMenu.cpp">
-      <Filter>Modules\Editor\MenuEditor</Filter>
-    </ClCompile>
     <ClCompile Include="ModuleTexture.cpp">
       <Filter>Modules\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp">
+      <Filter>GeometryLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>GeometryLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorMenu.cpp">
+      <Filter>MenuEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameData.cpp">
+      <Filter>MenuEditor\Others</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="Globals.h" />
     <ClInclude Include="Dummy.h">
       <Filter>Modules</Filter>
     </ClInclude>
@@ -211,20 +219,11 @@
     <ClInclude Include="ModuleProgram.h">
       <Filter>Modules\Program</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleEditor.h">
-      <Filter>Modules\Editor\MenuEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="LogEditor.h">
-      <Filter>Modules\Editor\MenuEditor</Filter>
-    </ClInclude>
     <ClInclude Include="vec3.h">
       <Filter>External\Exercises</Filter>
     </ClInclude>
     <ClInclude Include="string.h">
       <Filter>External\Exercises</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameData.h">
-      <Filter>Modules\Editor\MenuEditor</Filter>
     </ClInclude>
     <ClInclude Include="MathGeoLib\include\MathGeoLib.h">
       <Filter>External\MathGeoLib</Filter>
@@ -421,20 +420,39 @@
     <ClInclude Include="ModuleCamera.h">
       <Filter>Modules\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="EditorMenu.h">
-      <Filter>Modules\Editor\MenuEditor</Filter>
-    </ClInclude>
     <ClInclude Include="ModuleTexture.h">
       <Filter>Modules\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h" />
     <ClInclude Include="tinygltf-2.9.3\tiny_gltf.h">
       <Filter>External\tinygltf</Filter>
     </ClInclude>
     <ClInclude Include="tinygltf-2.9.3\json.hpp">
       <Filter>External\tinygltf</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h">
+      <Filter>GeometryLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>GeometryLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorMenu.h">
+      <Filter>MenuEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>MainApp</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals.h">
+      <Filter>MainApp</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleEditor.h">
+      <Filter>MenuEditor\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameData.h">
+      <Filter>MenuEditor\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="LogEditor.h">
+      <Filter>MenuEditor\Others</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Modules">
@@ -482,11 +500,20 @@
     <Filter Include="Modules\Texture">
       <UniqueIdentifier>{562d07f9-6f28-474a-906e-09fc80e5e361}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Modules\Editor\MenuEditor">
-      <UniqueIdentifier>{a45a0468-74da-400e-b59f-f8b4228451e8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="External\tinygltf">
       <UniqueIdentifier>{c7611574-7801-40d2-93f1-21e0da716f19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GeometryLoader">
+      <UniqueIdentifier>{c109bcc2-c5d1-45cc-8431-c2822f238c9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MenuEditor">
+      <UniqueIdentifier>{823e5c1a-0299-4f60-9f26-19f0f31dfb91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MainApp">
+      <UniqueIdentifier>{e5d100a5-43ad-4692-98e3-e23b1c35f5a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MenuEditor\Others">
+      <UniqueIdentifier>{eb89cbf6-7de7-449f-a551-d716af81d93e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

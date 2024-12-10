@@ -3,7 +3,6 @@
 #include "Globals.h"
 #include "FrameData.h"
 #include "ConsoleEditor.h"
-#include "LogEditor.h"
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
