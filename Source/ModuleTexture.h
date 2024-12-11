@@ -2,6 +2,7 @@
 #include "Module.h"
 #include "DirectXTex.h"
 #include <GL/glew.h>
+#include <memory>
 
 enum WrapMode {
 	CLAMP_TO_BORDER,

@@ -35,8 +35,8 @@ bool ModuleWindow::Init()
 		if (SDL_GetDesktopDisplayMode(0, &displayMode) == 0) // success
 		{
 			// set window in relation to desktop size
-			width = displayMode.w * 0.4;
-			height = displayMode.h * 0.4;
+			width = static_cast<int>(displayMode.w * 0.4);
+			height = static_cast<int>(displayMode.h * 0.4);
 		}
 
 		Uint32 flags = SDL_WINDOW_SHOWN |  SDL_WINDOW_OPENGL;

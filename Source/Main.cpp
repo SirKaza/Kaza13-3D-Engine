@@ -1,4 +1,6 @@
+#ifdef _DEBUG
 #include <vld.h> // memory leaks check
+#endif
 
 #include <stdlib.h>
 #include "Application.h"

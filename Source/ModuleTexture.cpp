@@ -2,7 +2,8 @@
 #include "ModuleTexture.h"
 #include "DirectXTex.h"
 #include <GL/glew.h>
-#include <filesystem>
+#include <memory>
+#include <cstdlib>
 
 ModuleTexture::ModuleTexture() : textureID(0)
 {}
@@ -12,7 +13,6 @@ ModuleTexture::~ModuleTexture()
 
 unsigned int ModuleTexture::load(const char* imagePath)
 {
-	// const wchar_t* imagePath = L"Baboon.png"; // wide-character
 	if (!loadTextureToCPU(imagePath))
 		return 0;
 
@@ -53,7 +53,7 @@ unsigned int ModuleTexture::load(const char* imagePath)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, scratchImage->GetMetadata().mipLevels - 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(scratchImage->GetMetadata().mipLevels - 1));
 
 	GLfloat borderColor[4] = { 1.0f, 1.0f, 0.0f, 1.0f }; // yellow colour
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
@@ -61,7 +61,7 @@ unsigned int ModuleTexture::load(const char* imagePath)
 	for (size_t i = 0; i < metadata.mipLevels; ++i)
 	{
 		const DirectX::Image* mip = scratchImage->GetImage(i, 0, 0);
-		glTexImage2D(GL_TEXTURE_2D, i, internalFormat, mip->width, mip->height, 0, format, type, mip->pixels);
+		glTexImage2D(GL_TEXTURE_2D, static_cast<GLint>(i), static_cast<GLint>(internalFormat), static_cast<GLint>(mip->width), static_cast<GLint>(mip->height), 0, format, type, mip->pixels);
 	}
 
 	if (metadata.mipLevels == 1)
@@ -74,25 +74,32 @@ unsigned int ModuleTexture::load(const char* imagePath)
 
 bool ModuleTexture::loadTextureToCPU(const char* imagePath)
 {
-	std::filesystem::path wImagePath = imagePath; // into std::filesystem::path
+	size_t len = 0;
+	mbstowcs_s(&len, nullptr, 0, imagePath, 0);
+	wchar_t* wImagePath = new wchar_t[len];
+
+	mbstowcs_s(&len, wImagePath, len, imagePath, _TRUNCATE); // convert to wchar
+
+	bool loaded = false;
 	scratchImage = std::make_unique<DirectX::ScratchImage>();
-	HRESULT hr = DirectX::LoadFromDDSFile(wImagePath.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, *scratchImage);
-	if (SUCCEEDED(hr))
+	if (SUCCEEDED(DirectX::LoadFromDDSFile(wImagePath, DirectX::DDS_FLAGS_NONE, nullptr, *scratchImage)))
 	{
-		return true;
+		loaded = true;
+	}
+	else if (SUCCEEDED(DirectX::LoadFromTGAFile(wImagePath, nullptr, *scratchImage)))
+	{
+		loaded = true;
+	}
+	else if (SUCCEEDED(DirectX::LoadFromWICFile(wImagePath, DirectX::WIC_FLAGS_NONE, nullptr, *scratchImage)))
+	{
+		loaded = true;
 	}
 
-	hr = DirectX::LoadFromTGAFile(wImagePath.c_str(), nullptr, *scratchImage);
-	if (SUCCEEDED(hr))
-	{
-		return true;
-	}
+	delete[] wImagePath;
 
-	hr = DirectX::LoadFromWICFile(wImagePath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *scratchImage);
-	if (SUCCEEDED(hr))
-	{
+	if (loaded)
 		return true;
-	}
+
 	ENGINE_LOG("Error with texture %ls", imagePath);
 	return false;
 }
