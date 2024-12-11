@@ -7,6 +7,7 @@
 #include "SDL/include/SDL.h"
 #include <imgui_impl_sdl2.h>
 #include "Math/float3.h"
+#include "Model.h"
 
 ModuleInput::ModuleInput()
 {}
@@ -67,7 +68,7 @@ update_status ModuleInput::Update()
                 if (strstr(file, ".gltf") != nullptr)
                     App->GetRender()->setModel(file);
                 else if (strstr(file, ".png") != nullptr || strstr(file, ".dds") != nullptr)
-                    App->GetRender()->setModel(file);
+                    App->GetRender()->getModel()->setTexture(file);
 
                 SDL_free(sdlEvent.drop.file);
                 break;

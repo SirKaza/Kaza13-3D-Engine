@@ -21,7 +21,9 @@ public:
 	float4x4 getModelMatrix() const { return modelMatrix; }
 
 	unsigned getProgramID() const { return program_id; }
+
 	void setModel(const char* pathModel);
+	Model* getModel() const { return model.get(); } // we can modify
 
 private:
 	unsigned program_id;

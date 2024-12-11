@@ -11,6 +11,9 @@ public:
 	Model();
 	~Model();
 
+	void cleanTextures();
+	void cleanMeshes();
+
 	void load(const char* assetFileName);
 	void render();
 	void loadMaterials(const tinygltf::Model& srcModel);

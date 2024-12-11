@@ -18,13 +18,22 @@ Model::Model() : meshes(), textures(), modelMatrix()
 
 Model::~Model()
 {
+	cleanTextures();
+	cleanMeshes();
+}
+
+void Model::cleanTextures()
+{
 	ENGINE_LOG("%d Texture cleaned up successfully", textures.size());
 	for (ModuleTexture* texture : textures)
 	{
 		delete texture;
 	}
 	textures.clear();
+}
 
+void Model::cleanMeshes()
+{
 	ENGINE_LOG("%d Meshes cleaned up successfully", meshes.size());
 	for (Mesh* mesh : meshes)
 	{
@@ -123,5 +132,8 @@ void Model::loadModelMatrix(const tinygltf::Model& model)
 
 void Model::setTexture(const char* texturePath)
 {
-	textures.clear();
+	cleanTextures();
+	ModuleTexture* textureModule = new ModuleTexture();
+	unsigned int textureId = textureModule->load(texturePath);
+	if (textureId != 0) textures.push_back(textureModule);
 }
