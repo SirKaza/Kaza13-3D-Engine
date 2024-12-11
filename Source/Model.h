@@ -15,10 +15,11 @@ public:
 	void render();
 	void loadMaterials(const tinygltf::Model& srcModel);
 	void loadModelMatrix(const tinygltf::Model& model);
+	void setTexture(const char* texturePath);
 
 private:
 	std::vector<Mesh*> meshes;
-	std::vector<unsigned> textures;
+	std::vector<ModuleTexture*> textures;
 	float4x4 modelMatrix;
 };
 

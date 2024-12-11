@@ -11,7 +11,7 @@
 #include "Math/float4.h"
 #include "Math/Quat.h"
 
-Model::Model()
+Model::Model() : meshes(), textures(), modelMatrix()
 {
 	
 }
@@ -19,13 +19,9 @@ Model::Model()
 Model::~Model()
 {
 	ENGINE_LOG("%d Texture cleaned up successfully", textures.size());
-	for (unsigned &textureID : textures)
+	for (ModuleTexture* texture : textures)
 	{
-		if (textureID != 0)
-		{
-			glDeleteTextures(1, &textureID);
-			textureID = 0;
-		}
+		delete texture;
 	}
 	textures.clear();
 
@@ -84,13 +80,15 @@ void Model::loadMaterials(const tinygltf::Model& srcModel)
 	for (const auto& srcMaterial : srcModel.materials)
 	{
 		unsigned int textureId = 0;
+		ModuleTexture* textureModule = nullptr;
 		if (srcMaterial.pbrMetallicRoughness.baseColorTexture.index >= 0)
 		{
 			const tinygltf::Texture& texture = srcModel.textures[srcMaterial.pbrMetallicRoughness.baseColorTexture.index];
 			const tinygltf::Image& image = srcModel.images[texture.source];
-			textureId = (App->GetTexture()->load(image.uri.c_str()));
+			textureModule = new ModuleTexture();
+			textureId = textureModule->load(image.uri.c_str());
 		}
-		if (textureId != 0) textures.push_back(textureId);
+		if (textureId != 0) textures.push_back(textureModule);
 	}
 }
 
@@ -121,4 +119,9 @@ void Model::loadModelMatrix(const tinygltf::Model& model)
 	}
 
 	modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
+}
+
+void Model::setTexture(const char* texturePath)
+{
+	textures.clear();
 }

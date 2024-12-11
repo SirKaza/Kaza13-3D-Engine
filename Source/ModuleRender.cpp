@@ -35,12 +35,8 @@ bool ModuleRender::Init()
 	free(vtx_shader);
 	free(frg_shader);
 
-	//model.load("TriangleWithoutIndices.gltf");
-	//model.load("Triangle.gltf");
-	//model.load("Box.gltf");
-	//model.load("BoxInterleaved.gltf");
-	//model.load("BoxTextured.gltf");
-	model.load("BakerHouse.gltf");
+	model = std::make_unique<Model>();
+	model->load("BakerHouse.gltf");
 
 	return true;
 }
@@ -58,9 +54,9 @@ update_status ModuleRender::Update()
 	glUniformMatrix4fv(1, 1, GL_FALSE, &viewMatrixT[0][0]);
 	glUniformMatrix4fv(2, 1, GL_TRUE, &proj[0][0]);
 
-	model.render();
+	model->render();
 
-	UpdateFrameData();
+	updateFrameData();
 
 	return UPDATE_CONTINUE;
 }
@@ -71,4 +67,10 @@ void ModuleRender::lookAtTarget()
 	Frustum frustum = App->GetCamera()->getFrustum();
 
 	viewMatrix = App->GetCamera()->LookAt(frustum.pos, target, frustum.up);
+}
+
+void ModuleRender::setModel(const char* pathModel)
+{
+	model = std::make_unique<Model>();
+	model->load(pathModel);
 }

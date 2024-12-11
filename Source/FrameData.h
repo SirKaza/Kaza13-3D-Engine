@@ -9,5 +9,5 @@ const size_t max_log_size = 100;
 extern std::chrono::steady_clock::time_point startTime;
 extern int maxFPS;
 
-void UpdateFrameData();
-void AddFrameData(float fps, float ms);
+void updateFrameData();
+void addFrameData(float fps, float ms);

@@ -9,7 +9,13 @@ ModuleTexture::ModuleTexture() : textureID(0)
 {}
 
 ModuleTexture::~ModuleTexture()
-{}
+{
+	if (textureID != 0)
+	{
+		glDeleteTextures(1, &textureID);
+		textureID = 0;
+	}
+}
 
 unsigned int ModuleTexture::load(const char* imagePath)
 {

@@ -29,6 +29,7 @@ public:
 
 	const DirectX::ScratchImage& getScratchImage() const { return *scratchImage; }
 
+	const GLuint getTextureID() const { return textureID; }
 	const int getWrapMode() const;
 	void setWrapMode(GLenum wrapMode);
 

@@ -5,6 +5,8 @@
 #include "tiny_gltf.h"
 #include "Math/float4x4.h"
 
+class ModuleTexture;
+
 class Mesh
 {
 public:
@@ -12,7 +14,7 @@ public:
 	~Mesh();
 
 	void load(const tinygltf::Model& model, const tinygltf::Mesh& srcMesh, const tinygltf::Primitive& primitive, size_t nodeIndex);
-	void render(const std::vector<unsigned>& textures, const float4x4& srcModelMatrix);
+	void render(const std::vector<ModuleTexture*>& textures, const float4x4& srcModelMatrix);
 	void loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive);
 	void createVAO();
 	void loadModelMatrix(const tinygltf::Model& model, const tinygltf::Mesh& mesh, size_t nodeIndex);

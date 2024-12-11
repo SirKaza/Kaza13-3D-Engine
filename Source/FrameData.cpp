@@ -9,7 +9,7 @@ std::vector<float> ms_log;
 std::chrono::steady_clock::time_point startTime;
 int maxFPS = 60;
 
-void UpdateFrameData() {
+void updateFrameData() {
     float target_frame_time = 1000.0f / maxFPS; // 5Hz = 200ms
 
     // Calculate Frame time
@@ -31,10 +31,10 @@ void UpdateFrameData() {
     float ms = frame_time;
 
     // Add FPS & MS to LOG
-    AddFrameData(fps, ms);
+    addFrameData(fps, ms);
 }
 
-void AddFrameData(float fps, float ms) {
+void addFrameData(float fps, float ms) {
     if (fps_log.size() >= max_log_size) {
         fps_log.erase(fps_log.begin()); 
     }

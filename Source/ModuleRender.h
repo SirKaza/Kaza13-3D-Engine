@@ -2,6 +2,8 @@
 #include "Module.h"
 #include "Math/float4x4.h"
 #include "Model.h"
+#include <GL/glew.h>
+#include <memory>
 
 class ModuleRender : public Module
 {
@@ -19,11 +21,12 @@ public:
 	float4x4 getModelMatrix() const { return modelMatrix; }
 
 	unsigned getProgramID() const { return program_id; }
+	void setModel(const char* pathModel);
 
 private:
 	unsigned program_id;
 
 	float4x4 modelMatrix, viewMatrix;
-	Model model;
+	std::unique_ptr<Model> model;
 };
 

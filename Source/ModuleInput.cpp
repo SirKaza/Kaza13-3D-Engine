@@ -3,6 +3,7 @@
 #include "ModuleInput.h"
 #include "ModuleOpenGL.h"
 #include "ModuleCamera.h"
+#include "ModuleRender.h"
 #include "SDL/include/SDL.h"
 #include <imgui_impl_sdl2.h>
 #include "Math/float3.h"
@@ -58,6 +59,18 @@ update_status ModuleInput::Update()
 
             case SDL_MOUSEWHEEL:
                 mouseWheelY = sdlEvent.wheel.y;
+                break;
+
+            case SDL_DROPFILE:
+                const char* file = sdlEvent.drop.file;
+
+                if (strstr(file, ".gltf") != nullptr)
+                    App->GetRender()->setModel(file);
+                else if (strstr(file, ".png") != nullptr || strstr(file, ".dds") != nullptr)
+                    App->GetRender()->setModel(file);
+
+                SDL_free(sdlEvent.drop.file);
+                break;
         }
     }
 

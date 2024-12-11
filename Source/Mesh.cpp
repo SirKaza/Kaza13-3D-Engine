@@ -9,6 +9,7 @@
 #include "Math/float2.h"
 #include "Application.h"
 #include "ModuleRender.h"
+#include "ModuleTexture.h"
 #include "Math/float4x4.h"
 #include "Math/float4.h"
 #include "Math/Quat.h"
@@ -117,7 +118,7 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	createVAO();
 }
 
-void Mesh::render(const std::vector<unsigned>& textures, const float4x4& modelMatrix)
+void Mesh::render(const std::vector<ModuleTexture*>& textures, const float4x4& modelMatrix)
 {
 	glUseProgram(App->GetRender()->getProgramID());
 	float4x4 finalModelMatrix = modelMatrix * meshModelMatrix;
@@ -126,7 +127,7 @@ void Mesh::render(const std::vector<unsigned>& textures, const float4x4& modelMa
 	if (materialIndex < textures.size()) // index not invalid
 	{
 		glActiveTexture(GL_TEXTURE0 + materialIndex);
-		glBindTexture(GL_TEXTURE_2D, textures[materialIndex]);
+		glBindTexture(GL_TEXTURE_2D, textures[materialIndex]->getTextureID());
 	}
 
 	glBindVertexArray(vao);
