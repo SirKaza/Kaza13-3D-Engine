@@ -132,7 +132,7 @@ void Mesh::render(const std::vector<unsigned>& textures, const float4x4& modelMa
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numIndices), GL_UNSIGNED_INT, nullptr);
 
-	glBindVertexArray(0);
+	glBindVertexArray(0);	
 }
 
 void Mesh::loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
