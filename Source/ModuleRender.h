@@ -7,11 +7,10 @@ class ModuleRender : public Module
 {
 public:
 	ModuleRender();
-	~ModuleRender();
+	~ModuleRender() override;
 
-	bool Init();
-	update_status Update();
-	bool CleanUp();
+	bool Init() override;
+	update_status Update() override;
 
 	void lookAtTarget();
 

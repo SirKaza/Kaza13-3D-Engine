@@ -10,11 +10,11 @@ class ModuleInput : public Module
 public:
 	
 	ModuleInput();
-	~ModuleInput();
+	~ModuleInput() override;
 
-	bool Init();
-	update_status Update();
-	bool CleanUp();
+	bool Init() override;
+	update_status Update() override;
+	bool CleanUp() override;
 
 	const Uint8* getKeyboard() const { return keyboard; }
 	const Uint32 getMouseButtons() const { return mouseButtons; }

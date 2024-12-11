@@ -14,13 +14,13 @@ public:
 	ModuleWindow();
 
 	// Destructor
-	virtual ~ModuleWindow();
+	~ModuleWindow() override;
 
 	// Called before quitting
-	bool Init();
+	bool Init() override;
 
 	// Called before quitting
-	bool CleanUp();
+	bool CleanUp() override;
 
 	void setFullscreen(bool fullscreen);
 	void setBorderless(bool borderless);

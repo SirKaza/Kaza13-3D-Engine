@@ -10,21 +10,6 @@ ModuleTexture::ModuleTexture() : textureID(0)
 ModuleTexture::~ModuleTexture()
 {}
 
-bool ModuleTexture::Init() 
-{
-	return true;
-}
-
-update_status ModuleTexture::Update()
-{
-	return UPDATE_CONTINUE;
-}
-
-bool ModuleTexture::CleanUp()
-{
-	return true;
-}
-
 unsigned int ModuleTexture::load(const char* imagePath)
 {
 	// const wchar_t* imagePath = L"Baboon.png"; // wide-character

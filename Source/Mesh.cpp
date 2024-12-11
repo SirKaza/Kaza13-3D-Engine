@@ -13,7 +13,7 @@
 #include "Math/float4.h"
 #include "Math/Quat.h"
 
-Mesh::Mesh() : vao(0), vbo(0), ebo(0), numIndices(0)
+Mesh::Mesh() : vao(0), vbo(0), ebo(0), numIndices(0), materialIndex(0)
 {}
 
 Mesh::~Mesh()
@@ -177,10 +177,10 @@ void Mesh::createVAO()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize, reinterpret_cast<void*>(0));
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(sizeof(float) * 3));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, vertexSize, reinterpret_cast<void*>(sizeof(float) * 3));
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
@@ -191,34 +191,27 @@ void Mesh::loadModelMatrix(const tinygltf::Model& model, const tinygltf::Mesh& m
 {
 	const tinygltf::Node& node = model.nodes[nodeIndex];
 
-	if (!node.matrix.empty())
+	// Translation
+	float3 translation(0.0f, 0.0f, 0.0f);
+	if (!node.translation.empty() && node.translation.size() == 3)
 	{
-		modelMatrix.Set((float*)node.matrix.data()); 
+		translation = float3(node.translation[0], node.translation[1], node.translation[2]);
 	}
-	else
+
+	// Rotation
+	float4 rotationQuat(0.0f, 0.0f, 0.0f, 1.0f);
+	if (!node.rotation.empty() && node.rotation.size() == 4)
 	{
-		// Translation
-		float3 translation(0.0f, 0.0f, 0.0f);
-		if (!node.translation.empty() && node.translation.size() == 3)
-		{
-			translation = float3(node.translation[0], node.translation[1], node.translation[2]);
-		}
-
-		// Rotation
-		float4 rotationQuat(0.0f, 0.0f, 0.0f, 1.0f);
-		if (!node.rotation.empty() && node.rotation.size() == 4)
-		{
-			rotationQuat = float4(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]);
-		}
-		float4x4 rotationMatrix = Quat(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w).ToFloat4x4();
-
-		// Scale
-		float3 scale(1.0f, 1.0f, 1.0f);
-		if (!node.scale.empty() && node.scale.size() == 3)
-		{
-			scale = float3(node.scale[0], node.scale[1], node.scale[2]);
-		}
-
-		modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
+		rotationQuat = float4(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]);
 	}
+	float4x4 rotationMatrix = Quat(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w).ToFloat4x4();
+
+	// Scale
+	float3 scale(1.0f, 1.0f, 1.0f);
+	if (!node.scale.empty() && node.scale.size() == 3)
+	{
+		scale = float3(node.scale[0], node.scale[1], node.scale[2]);
+	}
+
+	modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
 }

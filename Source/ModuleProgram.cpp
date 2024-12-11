@@ -22,10 +22,9 @@ char* ModuleProgram::LoadShaderSource(const char* shader_file_name)
 		
 
 		// allocate memory to contain the whole file:
-		data = (char*) malloc (sizeof(char)* lSize + 1); // +1 for '\0'
-		size_t result = 0;
+		data = reinterpret_cast<char*>(malloc(sizeof(char)* lSize + 1)); // +1 for '\0'
 		if (data != NULL) {
-			result = fread(data, 1, lSize, file);
+			size_t result = fread(data, 1, lSize, file);
 			data[lSize] = '\0';
 			if (result == lSize)
 				ENGINE_LOG("%s loaded into memory", shader_file_name);
@@ -49,7 +48,7 @@ unsigned ModuleProgram::CompileShader(unsigned type, const char* source)
 		if (len > 0)
 		{
 			int written = 0;
-			char* info = (char*)malloc(len);
+			char* info = reinterpret_cast<char*>(malloc(len));
 			glGetShaderInfoLog(shader_id, len, &written, info);
 			ENGINE_LOG("Log Info: %s", info);
 			free(info);
@@ -73,7 +72,7 @@ unsigned ModuleProgram::CreateProgram(unsigned vtx_shader, unsigned frg_shader)
 		if (len > 0)
 		{
 			int written = 0;
-			char* info = (char*)malloc(len);
+			char* info = reinterpret_cast<char*>(malloc(len));
 			glGetProgramInfoLog(program_id, len, &written, info);
 			ENGINE_LOG("Program Log Info: %s", info);
 			free(info);

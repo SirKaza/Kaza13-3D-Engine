@@ -10,16 +10,12 @@ class ModuleEditor : public Module
 {
 public:
 	ModuleEditor();
-	~ModuleEditor();
+	~ModuleEditor() override;
 
-	bool Init();
-	update_status PreUpdate();
-	update_status Update();
-	update_status PostUpdate();
-	bool CleanUp();
-
-	ImGuiContext* getContext() const { return context; }
-	EditorMenu* getEditorMenu() const { return menu; }
+	bool Init() override;
+	update_status PreUpdate() override;
+	update_status Update() override;
+	bool CleanUp() override;
 
 private:
 	ImGuiContext* context;

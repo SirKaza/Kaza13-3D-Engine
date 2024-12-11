@@ -65,11 +65,6 @@ update_status ModuleRender::Update()
 	return UPDATE_CONTINUE;
 }
 
-bool ModuleRender::CleanUp()
-{
-	return true;
-}
-
 void ModuleRender::lookAtTarget()
 {
 	float3 target = modelMatrix.TranslatePart();

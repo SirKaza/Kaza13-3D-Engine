@@ -21,16 +21,10 @@ class ModuleTexture : public Module
 {
 public:
 	ModuleTexture();
-	~ModuleTexture();
-
-	bool Init();
-	update_status Update();
-	bool CleanUp();
+	~ModuleTexture() override;
 
 	unsigned int load(const char* imagePath);
 	bool loadTextureToCPU(const char* imagePath);
-
-	GLuint getTextureID() const { return textureID; }
 
 	const DirectX::ScratchImage& getScratchImage() const { return *scratchImage; }
 

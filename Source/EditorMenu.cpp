@@ -67,8 +67,8 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
     if (ImGui::CollapsingHeader("Application"))
     {
         // Some info
-        ImGui::InputText("App Name", (char*)ENGINE_NAME, IM_ARRAYSIZE(ENGINE_NAME), ImGuiInputTextFlags_ReadOnly);
-        ImGui::InputText("Organization", (char*)ORGANIZATION_NAME, IM_ARRAYSIZE(ORGANIZATION_NAME), ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputText("App Name", const_cast<char*>(ENGINE_NAME), IM_ARRAYSIZE(ENGINE_NAME), ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputText("Organization", const_cast<char*>(ORGANIZATION_NAME), IM_ARRAYSIZE(ORGANIZATION_NAME), ImGuiInputTextFlags_ReadOnly);
 
         // FPS Slider
         static int slider_FPS = 0;
@@ -293,7 +293,7 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d.%d.%d", sdlVersion.major, sdlVersion.minor, sdlVersion.patch);
 
         // OpenGL version
-        const char* version = (const char*)glGetString(GL_VERSION);
+        const char* version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
         ImGui::Text("OpenGL Version:");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", version);
@@ -316,13 +316,13 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
         ImGui::Separator(); // ----
 
         // GPU
-        const char* vendor = (const char*) glGetString(GL_VENDOR);
+        const char* vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
         ImGui::Text("GPU:");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", vendor);
         
         // GPU Brand
-        const char* renderer = (const char*)glGetString(GL_RENDERER);
+        const char* renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
         ImGui::Text("Brand:");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", renderer);

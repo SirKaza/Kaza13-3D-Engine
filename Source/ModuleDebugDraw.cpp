@@ -244,7 +244,7 @@ public:
         //std::printf("DDRenderInterfaceCoreGL ready!\n\n");
     }
 
-    ~DDRenderInterfaceCoreGL()
+    ~DDRenderInterfaceCoreGL() override
     {
         glDeleteProgram(linePointProgram);
         glDeleteProgram(textProgram);

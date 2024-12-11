@@ -45,11 +45,11 @@ update_status ModuleCamera::Update()
 	if (SDL_GetKeyboardFocus() != App->GetWindow()->window || SDL_GetMouseFocus() != App->GetWindow()->window)
 		return UPDATE_CONTINUE;
 
-	ImGuiIO& io = ImGui::GetIO();
+	const ImGuiIO& io = ImGui::GetIO();
 	if (io.WantCaptureMouse) // If ImGui has the mouse, dont make changes
 		return UPDATE_CONTINUE;
 
-	ModuleInput* input = App->GetInput();
+	const ModuleInput* input = App->GetInput();
     const Uint8* keyboard = input->getKeyboard();
 	float speed = CAMERA_SPEED;
     if (keyboard[SDL_SCANCODE_LSHIFT])
@@ -138,11 +138,6 @@ update_status ModuleCamera::Update()
 	return UPDATE_CONTINUE;
 }
 
-bool ModuleCamera::CleanUp()
-{
-	return true;
-}
-
 float ModuleCamera::getAspectRatio() const
 {
 	return (float)App->GetWindow()->screen_surface->w / App->GetWindow()->screen_surface->h;
@@ -158,6 +153,7 @@ void ModuleCamera::setFOV(int horizontal)
 
 int ModuleCamera::getFOV() const
 {
+
 	return static_cast<int>(RadToDeg(frustum.horizontalFov));
 }
 

@@ -22,7 +22,6 @@ public:
     void showCaps() const;
 
     void setWindowFlags(WindowFlags others) { windowFlags = others; }
-    bool getVsync() const { return windowFlags.vsync; }
 
 private:
     WindowFlags windowFlags;

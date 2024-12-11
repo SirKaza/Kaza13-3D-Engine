@@ -104,12 +104,6 @@ update_status ModuleOpenGL::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-// Called every draw update
-update_status ModuleOpenGL::Update()
-{
-	return UPDATE_CONTINUE;
-}
-
 update_status ModuleOpenGL::PostUpdate()
 {
 	SDL_GL_SwapWindow(SDL_GL_GetCurrentWindow()); // swap currentWindow
@@ -131,7 +125,7 @@ bool ModuleOpenGL::CleanUp()
 
 void ModuleOpenGL::WindowResized(unsigned width, unsigned height, unsigned windowID)
 {
-	SDL_Window* window = SDL_GetWindowFromID(windowID);
+	const SDL_Window* window = SDL_GetWindowFromID(windowID);
 	if (window != nullptr)
 	{
 		if (windowID == SDL_GetWindowID(App->GetWindow()->window)) // main window

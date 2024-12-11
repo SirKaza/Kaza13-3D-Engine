@@ -76,12 +76,6 @@ update_status ModuleEditor::Update()
     return UPDATE_CONTINUE;
 }
 
-update_status ModuleEditor::PostUpdate()
-{
-
-    return UPDATE_CONTINUE;
-}
-
 bool ModuleEditor::CleanUp()
 {
     ImGui_ImplOpenGL3_Shutdown();
