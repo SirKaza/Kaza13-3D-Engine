@@ -117,10 +117,11 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	createVAO();
 }
 
-void Mesh::render(const std::vector<unsigned>& textures)
+void Mesh::render(const std::vector<unsigned>& textures, const float4x4& modelMatrix)
 {
 	glUseProgram(App->GetRender()->getProgramID());
-	glUniformMatrix4fv(0, 1, GL_TRUE, &modelMatrix[0][0]);
+	float4x4 finalModelMatrix = modelMatrix * meshModelMatrix;
+	glUniformMatrix4fv(0, 1, GL_TRUE, &finalModelMatrix[0][0]);
 
 	if (materialIndex < textures.size()) // index not invalid
 	{
@@ -213,5 +214,5 @@ void Mesh::loadModelMatrix(const tinygltf::Model& model, const tinygltf::Mesh& m
 		scale = float3(node.scale[0], node.scale[1], node.scale[2]);
 	}
 
-	modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
+	meshModelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
 }

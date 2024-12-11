@@ -7,6 +7,9 @@
 #include "Mesh.h"
 #include "Application.h"
 #include "ModuleTexture.h"
+#include "Math/float4x4.h"
+#include "Math/float4.h"
+#include "Math/Quat.h"
 
 Model::Model()
 {
@@ -47,18 +50,23 @@ void Model::load(const char* assetFileName)
 	}
 	else // model found successfully
 	{
-		// load all materials for model
+		// load modelMatrix rootNode
+		loadModelMatrix(model);
+
+		// load all materials(textures) for model
 		loadMaterials(model);
 
+		int cont = 0;
 		// load all meshes (primitives)
 		for (const tinygltf::Mesh& srcMesh : model.meshes)
 		{
 			for (const tinygltf::Primitive& primitive : srcMesh.primitives)
 			{
 				Mesh* mesh = new Mesh();
-				mesh->load(model, srcMesh, primitive, meshes.size());
+				mesh->load(model, srcMesh, primitive, model.nodes[0].children[cont]);
 				meshes.push_back(mesh);
 			}
+			cont++;
 		}
 	}
 }
@@ -67,7 +75,7 @@ void Model::render()
 {
 	for (Mesh* mesh : meshes)
 	{
-		mesh->render(textures);
+		mesh->render(textures, modelMatrix);
 	}
 }
 
@@ -84,4 +92,33 @@ void Model::loadMaterials(const tinygltf::Model& srcModel)
 		}
 		if (textureId != 0) textures.push_back(textureId);
 	}
+}
+
+void Model::loadModelMatrix(const tinygltf::Model& model)
+{
+	const tinygltf::Node& node = model.nodes[0];
+
+	// Translation
+	float3 translation(0.0f, 0.0f, 0.0f);
+	if (!node.translation.empty() && node.translation.size() == 3)
+	{
+		translation = float3(node.translation[0], node.translation[1], node.translation[2]);
+	}
+
+	// Rotation
+	float4 rotationQuat(0.0f, 0.0f, 0.0f, 1.0f);
+	if (!node.rotation.empty() && node.rotation.size() == 4)
+	{
+		rotationQuat = float4(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]);
+	}
+	float4x4 rotationMatrix = Quat(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w).ToFloat4x4();
+
+	// Scale
+	float3 scale(1.0f, 1.0f, 1.0f);
+	if (!node.scale.empty() && node.scale.size() == 3)
+	{
+		scale = float3(node.scale[0], node.scale[1], node.scale[2]);
+	}
+
+	modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
 }

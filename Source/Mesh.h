@@ -12,7 +12,7 @@ public:
 	~Mesh();
 
 	void load(const tinygltf::Model& model, const tinygltf::Mesh& srcMesh, const tinygltf::Primitive& primitive, size_t nodeIndex);
-	void render(const std::vector<unsigned>& textures);
+	void render(const std::vector<unsigned>& textures, const float4x4& srcModelMatrix);
 	void loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive);
 	void createVAO();
 	void loadModelMatrix(const tinygltf::Model& model, const tinygltf::Mesh& mesh, size_t nodeIndex);
@@ -25,6 +25,6 @@ private:
 	unsigned materialIndex;
 	size_t numOfValues = 5;
 	size_t vertexSize = sizeof(float) * numOfValues;
-	float4x4 modelMatrix;
+	float4x4 meshModelMatrix;
 };
 
