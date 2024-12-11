@@ -311,6 +311,8 @@
 
 #ifdef _MSC_VER
 #pragma warning (disable: 26495)
+#pragma warning (disable: 6262)
+#pragma warning (disable: 6001)
 #endif
 
 namespace dd

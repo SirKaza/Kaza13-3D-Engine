@@ -21,7 +21,7 @@ private:
 	unsigned vao;
 	unsigned vbo;
 	unsigned ebo;
-	unsigned numIndices;
+	size_t numIndices;
 	unsigned materialIndex;
 	size_t numOfValues = 5;
 	size_t vertexSize = sizeof(float) * numOfValues;

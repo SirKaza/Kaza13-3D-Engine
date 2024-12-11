@@ -130,7 +130,7 @@ void Mesh::render(const std::vector<unsigned>& textures, const float4x4& modelMa
 	}
 
 	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numIndices), GL_UNSIGNED_INT, nullptr);
 
 	glBindVertexArray(0);
 }
@@ -143,7 +143,7 @@ void Mesh::loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, con
 		const tinygltf::BufferView& indView = model.bufferViews[indAcc.bufferView];
 		const unsigned char* buffer = &(model.buffers[indView.buffer].data[indAcc.byteOffset +
 			indView.byteOffset]);
-		unsigned int num_indices = indAcc.count;
+		size_t num_indices = indAcc.count;
 		numIndices = indAcc.count;
 
 		glGenBuffers(1, &ebo);
@@ -178,10 +178,10 @@ void Mesh::createVAO()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize, reinterpret_cast<void*>(0));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(vertexSize), reinterpret_cast<void*>(0));
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, vertexSize, reinterpret_cast<void*>(sizeof(float) * 3));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(vertexSize), reinterpret_cast<void*>(sizeof(float) * 3));
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
@@ -196,14 +196,14 @@ void Mesh::loadModelMatrix(const tinygltf::Model& model, const tinygltf::Mesh& m
 	float3 translation(0.0f, 0.0f, 0.0f);
 	if (!node.translation.empty() && node.translation.size() == 3)
 	{
-		translation = float3(node.translation[0], node.translation[1], node.translation[2]);
+		translation = float3(static_cast<float>(node.translation[0]), static_cast<float>(node.translation[1]), static_cast<float>(node.translation[2]));
 	}
 
 	// Rotation
 	float4 rotationQuat(0.0f, 0.0f, 0.0f, 1.0f);
 	if (!node.rotation.empty() && node.rotation.size() == 4)
 	{
-		rotationQuat = float4(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]);
+		rotationQuat = float4(static_cast<float>(node.rotation[0]), static_cast<float>(node.rotation[1]), static_cast<float>(node.rotation[2]), static_cast<float>(node.rotation[3]));
 	}
 	float4x4 rotationMatrix = Quat(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w).ToFloat4x4();
 
@@ -211,7 +211,7 @@ void Mesh::loadModelMatrix(const tinygltf::Model& model, const tinygltf::Mesh& m
 	float3 scale(1.0f, 1.0f, 1.0f);
 	if (!node.scale.empty() && node.scale.size() == 3)
 	{
-		scale = float3(node.scale[0], node.scale[1], node.scale[2]);
+		scale = float3(static_cast<float>(node.scale[0]), static_cast<float>(node.scale[1]), static_cast<float>(node.scale[2]));
 	}
 
 	meshModelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);

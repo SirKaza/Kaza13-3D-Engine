@@ -102,14 +102,14 @@ void Model::loadModelMatrix(const tinygltf::Model& model)
 	float3 translation(0.0f, 0.0f, 0.0f);
 	if (!node.translation.empty() && node.translation.size() == 3)
 	{
-		translation = float3(node.translation[0], node.translation[1], node.translation[2]);
+		translation = float3(static_cast<float>(node.translation[0]), static_cast<float>(node.translation[1]), static_cast<float>(node.translation[2]));
 	}
 
 	// Rotation
 	float4 rotationQuat(0.0f, 0.0f, 0.0f, 1.0f);
 	if (!node.rotation.empty() && node.rotation.size() == 4)
 	{
-		rotationQuat = float4(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]);
+		rotationQuat = float4(static_cast<float>(node.rotation[0]), static_cast<float>(node.rotation[1]), static_cast<float>(node.rotation[2]), static_cast<float>(node.rotation[3]));
 	}
 	float4x4 rotationMatrix = Quat(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w).ToFloat4x4();
 
@@ -117,7 +117,7 @@ void Model::loadModelMatrix(const tinygltf::Model& model)
 	float3 scale(1.0f, 1.0f, 1.0f);
 	if (!node.scale.empty() && node.scale.size() == 3)
 	{
-		scale = float3(node.scale[0], node.scale[1], node.scale[2]);
+		scale = float3(static_cast<float>(node.scale[0]), static_cast<float>(node.scale[1]), static_cast<float>(node.scale[2]));
 	}
 
 	modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);

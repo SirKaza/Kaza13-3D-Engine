@@ -34,6 +34,12 @@
 // instead of (v0, v1, v2) triplets for faster ray-triangle mesh intersection.
 #define SOA_HAS_EDGES
 
+#ifdef _MSC_VER
+#pragma warning (disable: 4267)
+#pragma warning (disable: 26812)
+#pragma warning (disable: 26451)
+#endif
+
 MATH_BEGIN_NAMESPACE
 
 enum SIMDCapability

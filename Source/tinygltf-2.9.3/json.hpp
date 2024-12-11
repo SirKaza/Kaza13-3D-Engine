@@ -2222,6 +2222,8 @@ JSON_HEDLEY_DIAGNOSTIC_POP
 // #include <nlohmann/detail/meta/void_t.hpp>
 
 
+
+
 namespace nlohmann
 {
 namespace detail
@@ -2634,6 +2636,9 @@ using is_detected_convertible =
     #define JSON_DIAGNOSTICS 0
 #endif
 
+#ifdef _MSC_VER
+#pragma warning (disable: 26819)
+#endif
 
 namespace nlohmann
 {
