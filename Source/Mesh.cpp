@@ -14,7 +14,7 @@
 #include "Math/float4.h"
 #include "Math/Quat.h"
 
-Mesh::Mesh() : vao(0), vbo(0), ebo(0), numIndices(0), materialIndex(0)
+Mesh::Mesh() : vao(0), vbo(0), ebo(0), numIndices(0), materialIndex(0), hasIndices(false)
 {}
 
 Mesh::~Mesh()
@@ -120,18 +120,30 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 
 void Mesh::render(const std::vector<ModuleTexture*>& textures, const float4x4& modelMatrix)
 {
-	glUseProgram(App->GetRender()->getProgramID());
+	unsigned int programdID = App->GetRender()->getProgramID();
+	glUseProgram(programdID);
+
 	float4x4 finalModelMatrix = modelMatrix * meshModelMatrix;
 	glUniformMatrix4fv(0, 1, GL_TRUE, &finalModelMatrix[0][0]);
 
-	if (materialIndex < textures.size()) // index not invalid
+	bool hasTexture = (materialIndex < textures.size());
+
+	if (hasTexture)
 	{
 		glActiveTexture(GL_TEXTURE0 + materialIndex);
 		glBindTexture(GL_TEXTURE_2D, textures[materialIndex]->getTextureID());
 	}
+	else
+	{
+		glUniform4fv(glGetUniformLocation(programdID, "baseColor"), 1, &App->GetRender()->getModel()->getBaseColor()[0]);
+	}
+	glUniform1i(glGetUniformLocation(programdID, "hasTexture"), hasTexture);
 
 	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numIndices), GL_UNSIGNED_INT, nullptr);
+	if (hasIndices)
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numIndices), GL_UNSIGNED_INT, nullptr);
+	else
+		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(numIndices));
 
 	glBindVertexArray(0);	
 }
@@ -140,6 +152,7 @@ void Mesh::loadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh, con
 {
 	if (primitive.indices >= 0)
 	{
+		hasIndices = true;
 		const tinygltf::Accessor& indAcc = model.accessors[primitive.indices];
 		const tinygltf::BufferView& indView = model.bufferViews[indAcc.bufferView];
 		const unsigned char* buffer = &(model.buffers[indView.buffer].data[indAcc.byteOffset +

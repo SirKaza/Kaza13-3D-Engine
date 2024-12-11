@@ -11,7 +11,7 @@
 #include "Math/float4.h"
 #include "Math/Quat.h"
 
-Model::Model() : meshes(), textures(), modelMatrix()
+Model::Model() : meshes(), textures(), modelMatrix(), baseColor()
 {
 	
 }
@@ -24,22 +24,28 @@ Model::~Model()
 
 void Model::cleanTextures()
 {
-	ENGINE_LOG("%d Texture cleaned up successfully", textures.size());
-	for (ModuleTexture* texture : textures)
+	if (!textures.empty())
 	{
-		delete texture;
+		ENGINE_LOG("%d Texture cleaned up successfully", textures.size());
+		for (ModuleTexture* texture : textures)
+		{
+			delete texture;
+		}
+		textures.clear();
 	}
-	textures.clear();
 }
 
 void Model::cleanMeshes()
 {
-	ENGINE_LOG("%d Meshes cleaned up successfully", meshes.size());
-	for (Mesh* mesh : meshes)
+	if (!meshes.empty())
 	{
-		delete mesh;
+		ENGINE_LOG("%d Meshes cleaned up successfully", meshes.size());
+		for (Mesh* mesh : meshes)
+		{
+			delete mesh;
+		}
+		meshes.clear();
 	}
-	meshes.clear();
 }
 
 void Model::load(const char* assetFileName)
@@ -68,7 +74,10 @@ void Model::load(const char* assetFileName)
 			for (const tinygltf::Primitive& primitive : srcMesh.primitives)
 			{
 				Mesh* mesh = new Mesh();
-				mesh->load(model, srcMesh, primitive, model.nodes[0].children[cont]);
+				if (model.nodes.size() > 1)
+					mesh->load(model, srcMesh, primitive, model.nodes[0].children[cont]);
+				else
+					mesh->load(model, srcMesh, primitive, 0);
 				meshes.push_back(mesh);
 			}
 			cont++;
@@ -88,17 +97,30 @@ void Model::loadMaterials(const tinygltf::Model& srcModel)
 {
 	for (const auto& srcMaterial : srcModel.materials)
 	{
-		unsigned int textureId = 0;
-		ModuleTexture* textureModule = nullptr;
-		if (srcMaterial.pbrMetallicRoughness.baseColorTexture.index >= 0)
+		if (srcMaterial.pbrMetallicRoughness.baseColorTexture.index >= 0) // texture
 		{
 			const tinygltf::Texture& texture = srcModel.textures[srcMaterial.pbrMetallicRoughness.baseColorTexture.index];
 			const tinygltf::Image& image = srcModel.images[texture.source];
-			textureModule = new ModuleTexture();
-			textureId = textureModule->load(image.uri.c_str());
+			loadTexture(image.uri.c_str());
 		}
-		if (textureId != 0) textures.push_back(textureModule);
+		else if (!srcMaterial.pbrMetallicRoughness.baseColorFactor.empty()) // colour
+		{
+			float4 color(
+				static_cast<float>(srcMaterial.pbrMetallicRoughness.baseColorFactor[0]),
+				static_cast<float>(srcMaterial.pbrMetallicRoughness.baseColorFactor[1]),
+				static_cast<float>(srcMaterial.pbrMetallicRoughness.baseColorFactor[2]),
+				(srcMaterial.pbrMetallicRoughness.baseColorFactor.size() > 3) ?
+				static_cast<float>(srcMaterial.pbrMetallicRoughness.baseColorFactor[3]) : 1.0f);
+			setBaseColor(color);
+		}
 	}
+}
+
+void Model::loadTexture(const char* texturePath)
+{
+	ModuleTexture* textureModule = new ModuleTexture();
+	unsigned int textureId = textureModule->load(texturePath);
+	if (textureId != 0) textures.push_back(textureModule);
 }
 
 void Model::loadModelMatrix(const tinygltf::Model& model)
@@ -133,7 +155,5 @@ void Model::loadModelMatrix(const tinygltf::Model& model)
 void Model::setTexture(const char* texturePath)
 {
 	cleanTextures();
-	ModuleTexture* textureModule = new ModuleTexture();
-	unsigned int textureId = textureModule->load(texturePath);
-	if (textureId != 0) textures.push_back(textureModule);
+	loadTexture(texturePath);
 }

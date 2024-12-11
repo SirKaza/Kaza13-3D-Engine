@@ -28,5 +28,6 @@ private:
 	size_t numOfValues = 5;
 	size_t vertexSize = sizeof(float) * numOfValues;
 	float4x4 meshModelMatrix;
+	bool hasIndices;
 };
 
