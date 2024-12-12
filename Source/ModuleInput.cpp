@@ -67,7 +67,7 @@ update_status ModuleInput::Update()
 
                 if (strstr(file, ".gltf") != nullptr)
                     App->GetRender()->setModel(file);
-                else if (strstr(file, ".png") != nullptr || strstr(file, ".dds") != nullptr)
+                else if (strstr(file, ".png") != nullptr || strstr(file, ".dds") != nullptr || strstr(file, ".jpg") != nullptr)
                     App->GetRender()->getModel()->setTexture(file);
 
                 SDL_free(sdlEvent.drop.file);
