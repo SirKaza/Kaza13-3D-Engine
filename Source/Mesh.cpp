@@ -127,6 +127,11 @@ void Mesh::render(const std::vector<ModuleTexture*>& textures)
 
 	if (!textures.empty())
 	{
+		if (materialIndex >= textures.size())
+		{
+			materialIndex = textures.size() - 1;
+		}
+
 		if (textures[materialIndex] != nullptr)
 		{
 			hasTexture = (textures[materialIndex]->getTextureID() != 0);
