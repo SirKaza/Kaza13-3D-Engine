@@ -3,6 +3,7 @@
 #include "DirectXTex.h"
 #include <GL/glew.h>
 #include <memory>
+#include "Math/float4.h"
 
 enum WrapMode {
 	CLAMP_TO_BORDER,
@@ -44,8 +45,12 @@ public:
 
 	const char* DXGIFormatToString(DXGI_FORMAT format);
 
+	void setBaseColor(const float4 color) { baseColor = color; }
+	float4 getBaseColor() const { return baseColor; }
+
 private:
 	std::unique_ptr<DirectX::ScratchImage> scratchImage;
+	float4 baseColor;
 
 	GLuint textureID = 0;
 	const GLenum wrapMode = GL_REPEAT;

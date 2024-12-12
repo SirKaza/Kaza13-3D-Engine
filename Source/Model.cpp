@@ -11,7 +11,7 @@
 #include "Math/float4.h"
 #include "Math/Quat.h"
 
-Model::Model() : meshes(), textures(), modelMatrix(), baseColor()
+Model::Model() : meshes(), textures()
 {
 	
 }
@@ -48,6 +48,7 @@ void Model::cleanMeshes()
 	}
 }
 
+
 void Model::load(const char* assetFileName)
 {
 	tinygltf::TinyGLTF gltfContext;
@@ -61,27 +62,55 @@ void Model::load(const char* assetFileName)
 	}
 	else // model found successfully
 	{
-		// load modelMatrix rootNode
-		loadModelMatrix(model);
-
 		// load all materials(textures) for model
 		loadMaterials(model);
 
-		int cont = 0;
-		// load all meshes (primitives)
-		for (const tinygltf::Mesh& srcMesh : model.meshes)
+		if (!model.nodes.empty())
 		{
-			for (const tinygltf::Primitive& primitive : srcMesh.primitives)
+			const float4x4& parentMatrix = float4x4::identity;
+			if (!model.scenes.empty() && !model.scenes[0].nodes.empty())
 			{
-				Mesh* mesh = new Mesh();
-				if (model.nodes.size() > 1)
-					mesh->load(model, srcMesh, primitive, model.nodes[0].children[cont]);
-				else
-					mesh->load(model, srcMesh, primitive, 0);
-				meshes.push_back(mesh);
+				// starting node rootNode
+				loadNodeRecursive(model, model.scenes[0].nodes[0], parentMatrix);
 			}
-			cont++;
+			else
+			{
+				loadNodeRecursive(model, 0, parentMatrix);
+			}
 		}
+	}
+}
+
+void Model::loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const float4x4& parentMatrix)
+{
+	// same nodes as meshes and there is scene
+	if (nodeIndex < 0 || nodeIndex >= model.nodes.size())
+		return;
+
+	const tinygltf::Node& node = model.nodes[nodeIndex];
+
+	float4x4& localMatrix = getMatrixFromNode(node);
+	float4x4 globalMatrix = parentMatrix * localMatrix;
+
+	// if node has mesh
+	if (node.mesh >= 0 && node.mesh < model.meshes.size())
+	{
+		const tinygltf::Mesh& srcMesh = model.meshes[node.mesh];
+
+		for (const tinygltf::Primitive& primitive : srcMesh.primitives)
+		{
+			Mesh* mesh = new Mesh();
+			mesh->load(model, srcMesh, primitive, nodeIndex);
+			mesh->setMatrix(globalMatrix);
+			meshes.push_back(mesh);
+		}
+	}
+
+	// recursive nodes childrens
+	for (size_t i = 0; i < node.children.size(); ++i)
+	{
+		int childIndex = node.children[i];
+		loadNodeRecursive(model, childIndex, globalMatrix);
 	}
 }
 
@@ -89,7 +118,7 @@ void Model::render()
 {
 	for (Mesh* mesh : meshes)
 	{
-		mesh->render(textures, modelMatrix);
+		mesh->render(textures);
 	}
 }
 
@@ -111,7 +140,9 @@ void Model::loadMaterials(const tinygltf::Model& srcModel)
 				static_cast<float>(srcMaterial.pbrMetallicRoughness.baseColorFactor[2]),
 				(srcMaterial.pbrMetallicRoughness.baseColorFactor.size() > 3) ?
 				static_cast<float>(srcMaterial.pbrMetallicRoughness.baseColorFactor[3]) : 1.0f);
-			setBaseColor(color);
+			ModuleTexture* textureModule = new ModuleTexture();
+			textureModule->setBaseColor(color);
+			textures.push_back(textureModule);
 		}
 	}
 }
@@ -123,33 +154,45 @@ void Model::loadTexture(const char* texturePath)
 	if (textureId != 0) textures.push_back(textureModule);
 }
 
-void Model::loadModelMatrix(const tinygltf::Model& model)
+float4x4& Model::getMatrixFromNode(const tinygltf::Node& node) const
 {
-	const tinygltf::Node& node = model.nodes[0];
-
-	// Translation
-	float3 translation(0.0f, 0.0f, 0.0f);
-	if (!node.translation.empty() && node.translation.size() == 3)
+	float4x4 modelMatrix;
+	if (!node.matrix.empty())
 	{
-		translation = float3(static_cast<float>(node.translation[0]), static_cast<float>(node.translation[1]), static_cast<float>(node.translation[2]));
+		modelMatrix = float4x4(
+			node.matrix[0], node.matrix[1], node.matrix[2], node.matrix[3],
+			node.matrix[4], node.matrix[5], node.matrix[6], node.matrix[7],
+			node.matrix[8], node.matrix[9], node.matrix[10], node.matrix[11],
+			node.matrix[12], node.matrix[13], node.matrix[14], node.matrix[15]
+		);
 	}
-
-	// Rotation
-	float4 rotationQuat(0.0f, 0.0f, 0.0f, 1.0f);
-	if (!node.rotation.empty() && node.rotation.size() == 4)
+	else
 	{
-		rotationQuat = float4(static_cast<float>(node.rotation[0]), static_cast<float>(node.rotation[1]), static_cast<float>(node.rotation[2]), static_cast<float>(node.rotation[3]));
-	}
-	float4x4 rotationMatrix = Quat(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w).ToFloat4x4();
+		// Translation
+		float3 translation(0.0f, 0.0f, 0.0f);
+		if (!node.translation.empty() && node.translation.size() == 3)
+		{
+			translation = float3(static_cast<float>(node.translation[0]), static_cast<float>(node.translation[1]), static_cast<float>(node.translation[2]));
+		}
 
-	// Scale
-	float3 scale(1.0f, 1.0f, 1.0f);
-	if (!node.scale.empty() && node.scale.size() == 3)
-	{
-		scale = float3(static_cast<float>(node.scale[0]), static_cast<float>(node.scale[1]), static_cast<float>(node.scale[2]));
-	}
+		// Rotation
+		float4 rotationQuat(0.0f, 0.0f, 0.0f, 1.0f);
+		if (!node.rotation.empty() && node.rotation.size() == 4)
+		{
+			rotationQuat = float4(static_cast<float>(node.rotation[0]), static_cast<float>(node.rotation[1]), static_cast<float>(node.rotation[2]), static_cast<float>(node.rotation[3]));
+		}
+		float4x4 rotationMatrix = Quat(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w).ToFloat4x4();
 
-	modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
+		// Scale
+		float3 scale(1.0f, 1.0f, 1.0f);
+		if (!node.scale.empty() && node.scale.size() == 3)
+		{
+			scale = float3(static_cast<float>(node.scale[0]), static_cast<float>(node.scale[1]), static_cast<float>(node.scale[2]));
+		}
+
+		modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
+		return modelMatrix;
+	}
 }
 
 void Model::setTexture(const char* texturePath)

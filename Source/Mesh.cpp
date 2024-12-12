@@ -112,30 +112,35 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 		}
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
-
-	loadModelMatrix(model, mesh, nodeIndex);
 	loadEBO(model, mesh, primitive);
 	createVAO();
 }
 
-void Mesh::render(const std::vector<ModuleTexture*>& textures, const float4x4& modelMatrix)
+void Mesh::render(const std::vector<ModuleTexture*>& textures)
 {
 	unsigned int programdID = App->GetRender()->getProgramID();
 	glUseProgram(programdID);
 
-	float4x4 finalModelMatrix = modelMatrix * meshModelMatrix;
-	glUniformMatrix4fv(0, 1, GL_TRUE, &finalModelMatrix[0][0]);
+	glUniformMatrix4fv(0, 1, GL_TRUE, &modelMatrix[0][0]);
 
-	bool hasTexture = (materialIndex < textures.size());
+	bool hasTexture = false;
 
-	if (hasTexture)
+	if (!textures.empty())
 	{
-		glActiveTexture(GL_TEXTURE0 + materialIndex);
-		glBindTexture(GL_TEXTURE_2D, textures[materialIndex]->getTextureID());
-	}
-	else
-	{
-		glUniform4fv(glGetUniformLocation(programdID, "baseColor"), 1, &App->GetRender()->getModel()->getBaseColor()[0]);
+		if (textures[materialIndex] != nullptr)
+		{
+			hasTexture = (textures[materialIndex]->getTextureID() != 0);
+		}
+
+		if (hasTexture)
+		{
+			glActiveTexture(GL_TEXTURE0 + materialIndex);
+			glBindTexture(GL_TEXTURE_2D, textures[materialIndex]->getTextureID());
+		}
+		else
+		{
+			glUniform4fv(glGetUniformLocation(programdID, "baseColor"), 1, &textures[materialIndex]->getBaseColor()[0]);
+		}
 	}
 	glUniform1i(glGetUniformLocation(programdID, "hasTexture"), hasTexture);
 
@@ -200,33 +205,4 @@ void Mesh::createVAO()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
 	glBindVertexArray(0);
-}
-
-void Mesh::loadModelMatrix(const tinygltf::Model& model, const tinygltf::Mesh& mesh, size_t nodeIndex)
-{
-	const tinygltf::Node& node = model.nodes[nodeIndex];
-
-	// Translation
-	float3 translation(0.0f, 0.0f, 0.0f);
-	if (!node.translation.empty() && node.translation.size() == 3)
-	{
-		translation = float3(static_cast<float>(node.translation[0]), static_cast<float>(node.translation[1]), static_cast<float>(node.translation[2]));
-	}
-
-	// Rotation
-	float4 rotationQuat(0.0f, 0.0f, 0.0f, 1.0f);
-	if (!node.rotation.empty() && node.rotation.size() == 4)
-	{
-		rotationQuat = float4(static_cast<float>(node.rotation[0]), static_cast<float>(node.rotation[1]), static_cast<float>(node.rotation[2]), static_cast<float>(node.rotation[3]));
-	}
-	float4x4 rotationMatrix = Quat(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w).ToFloat4x4();
-
-	// Scale
-	float3 scale(1.0f, 1.0f, 1.0f);
-	if (!node.scale.empty() && node.scale.size() == 3)
-	{
-		scale = float3(static_cast<float>(node.scale[0]), static_cast<float>(node.scale[1]), static_cast<float>(node.scale[2]));
-	}
-
-	meshModelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
 }
