@@ -64,4 +64,5 @@ void ModuleRender::setModel(const char* pathModel)
 {
 	model = std::make_unique<Model>();
 	model->load(pathModel);
+	App->GetCamera()->focusModel();
 }

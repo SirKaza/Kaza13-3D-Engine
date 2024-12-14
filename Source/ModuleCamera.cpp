@@ -38,6 +38,8 @@ bool ModuleCamera::Init()
 	frustum.verticalFov = math::pi / 4.0f;
 	App->GetCamera()->setAspectRatio(getAspectRatio());
 
+	focusModel();
+
 	return true;
 }
 

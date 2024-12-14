@@ -16,7 +16,8 @@
 #include <limits>
 
 Mesh::Mesh() : vao(0), vbo(0), ebo(0), numIndices(0), materialIndex(0), hasIndices(false), 
-minPoint(float3(FLT_MAX, FLT_MAX, FLT_MAX)), maxPoint(float3(-FLT_MAX, -FLT_MAX, -FLT_MAX))
+minPoint(float3(FLT_MAX, FLT_MAX, FLT_MAX)), maxPoint(float3(-FLT_MAX, -FLT_MAX, -FLT_MAX)),
+scale(float3::one)
 {}
 
 Mesh::~Mesh()
@@ -64,8 +65,8 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 		{
 			for (size_t i = 0; i < 3; ++i)
 			{
-				minPoint[i] = static_cast<float>(posAcc.minValues[i] * modelMatrix[i][i]); // min Point scaled
-				maxPoint[i] = static_cast<float>(posAcc.maxValues[i] * modelMatrix[i][i]);
+				minPoint[i] = static_cast<float>(posAcc.minValues[i] * scale[i]);
+				maxPoint[i] = static_cast<float>(posAcc.maxValues[i] * scale[i]);
 			}
 		}
 		else // no values by gltf

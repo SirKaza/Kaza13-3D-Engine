@@ -11,8 +11,9 @@
 #include "Math/float4.h"
 #include "Math/Quat.h"
 #include "Geometry/AABB.h"
+#include "Math/float3.h"
 
-Model::Model() : meshes(), textures()
+Model::Model() : meshes(), textures(), scaling(float3::one)
 {
 	
 }
@@ -104,6 +105,7 @@ void Model::loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const
 		{
 			Mesh* mesh = new Mesh();
 			mesh->setMatrix(globalMatrix);
+			mesh->setScale(scaling);
 			mesh->load(model, srcMesh, primitive, nodeIndex);
 			meshes.push_back(mesh);
 		}
@@ -157,7 +159,7 @@ void Model::loadTexture(const char* texturePath)
 	if (textureId != 0) textures.push_back(textureModule);
 }
 
-float4x4& Model::getMatrixFromNode(const tinygltf::Node& node) const
+float4x4& Model::getMatrixFromNode(const tinygltf::Node& node)
 {
 	float4x4 modelMatrix;
 	if (!node.matrix.empty())
@@ -191,6 +193,7 @@ float4x4& Model::getMatrixFromNode(const tinygltf::Node& node) const
 		if (!node.scale.empty() && node.scale.size() == 3)
 		{
 			scale = float3(static_cast<float>(node.scale[0]), static_cast<float>(node.scale[1]), static_cast<float>(node.scale[2]));
+			scaling = scale;
 		}
 
 		modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);

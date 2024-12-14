@@ -23,6 +23,8 @@ public:
 	const float3& getMinPoint() const { return minPoint; }
 	const float3& getMaxPoint() const { return maxPoint; }
 
+	void setScale(const float3& scaling) { scale = scaling; }
+
 private:
 	unsigned vao;
 	unsigned vbo;
@@ -35,5 +37,6 @@ private:
 	bool hasIndices;
 	float3 minPoint;
 	float3 maxPoint;
+	float3 scale;
 };
 
