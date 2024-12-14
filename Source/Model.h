@@ -35,7 +35,7 @@ public:
 
 private:
 	std::vector<Mesh*> meshes;
-	std::vector<ModuleTexture*> textures;
+	std::vector<ModuleTexture*> textures; // materials (textures and colors)
 	AABB modelAABB;
 	float3 scaling;
 	int nodeCont;
