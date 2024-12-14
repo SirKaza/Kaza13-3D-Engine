@@ -4,6 +4,7 @@
 #define TINYGLTF_NO_EXTERNAL_IMAGE 
 #include "tiny_gltf.h"
 #include "Math/float4x4.h"
+#include "Math/float3.h"
 
 class ModuleTexture;
 
@@ -19,6 +20,9 @@ public:
 	void createVAO();
 	void setMatrix(const float4x4& globalMatrix) { modelMatrix = globalMatrix; }
 
+	const float3& getMinPoint() const { return minPoint; }
+	const float3& getMaxPoint() const { return maxPoint; }
+
 private:
 	unsigned vao;
 	unsigned vbo;
@@ -29,5 +33,7 @@ private:
 	size_t vertexSize = sizeof(float) * numOfValues;
 	float4x4 modelMatrix;
 	bool hasIndices;
+	float3 minPoint;
+	float3 maxPoint;
 };
 

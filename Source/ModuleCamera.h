@@ -27,7 +27,8 @@ public:
 		frustum.up = up.Normalized();
 	}
 
-	float4x4 LookAt(const float3& eye, const float3& target, const float3& up);
+	float4x4 lookAt(const float3& eye, const float3& target, const float3& up) const;
+	void focusModel();
 
 	float4x4 getProjectionMatrix() const { return frustum.ProjectionMatrix(); }
 	float4x4 getViewMatrix() const { return frustum.ViewMatrix(); }

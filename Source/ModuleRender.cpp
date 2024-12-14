@@ -43,15 +43,14 @@ bool ModuleRender::Init()
 
 update_status ModuleRender::Update()
 {
-	//lookAtTarget(); // locked camera
-	viewMatrix = App->GetCamera()->getViewMatrix(); // free camera
-	float4x4 viewMatrixT = getViewMatrixTransposed();
+	float4x4 viewMatrix = App->GetCamera()->getViewMatrix(); // free camera
+	viewMatrix.Transpose();
 	float4x4 proj = App->GetCamera()->getProjectionMatrix();
 
 	// Pass MVP as uniform to Vertex shader
 	glUseProgram(program_id);
 
-	glUniformMatrix4fv(1, 1, GL_FALSE, &viewMatrixT[0][0]);
+	glUniformMatrix4fv(1, 1, GL_FALSE, &viewMatrix[0][0]);
 	glUniformMatrix4fv(2, 1, GL_TRUE, &proj[0][0]);
 
 	model->render();
@@ -59,14 +58,6 @@ update_status ModuleRender::Update()
 	updateFrameData();
 
 	return UPDATE_CONTINUE;
-}
-
-void ModuleRender::lookAtTarget()
-{
-	float3 target = modelMatrix.TranslatePart();
-	Frustum frustum = App->GetCamera()->getFrustum();
-
-	viewMatrix = App->GetCamera()->LookAt(frustum.pos, target, frustum.up);
 }
 
 void ModuleRender::setModel(const char* pathModel)

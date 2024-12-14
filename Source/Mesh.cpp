@@ -13,8 +13,10 @@
 #include "Math/float4x4.h"
 #include "Math/float4.h"
 #include "Math/Quat.h"
+#include <limits>
 
-Mesh::Mesh() : vao(0), vbo(0), ebo(0), numIndices(0), materialIndex(0), hasIndices(false)
+Mesh::Mesh() : vao(0), vbo(0), ebo(0), numIndices(0), materialIndex(0), hasIndices(false), 
+minPoint(float3(FLT_MAX, FLT_MAX, FLT_MAX)), maxPoint(float3(-FLT_MAX, -FLT_MAX, -FLT_MAX))
 {}
 
 Mesh::~Mesh()
@@ -56,6 +58,21 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 
 		numIndices = posAcc.count;
 		materialIndex = primitive.material;
+
+		// load min and max points of mesh
+		if (!posAcc.minValues.empty() && !posAcc.maxValues.empty())
+		{
+			for (size_t i = 0; i < 3; ++i)
+			{
+				minPoint[i] = static_cast<float>(posAcc.minValues[i] * modelMatrix[i][i]); // min Point scaled
+				maxPoint[i] = static_cast<float>(posAcc.maxValues[i] * modelMatrix[i][i]);
+			}
+		}
+		else // no values by gltf
+		{
+			minPoint = { std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max() };
+			maxPoint = { std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest() };
+		}
 
 		// uvs
 		bool hasUVs = (itTex != primitive.attributes.end());

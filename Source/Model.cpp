@@ -10,6 +10,7 @@
 #include "Math/float4x4.h"
 #include "Math/float4.h"
 #include "Math/Quat.h"
+#include "Geometry/AABB.h"
 
 Model::Model() : meshes(), textures()
 {
@@ -77,6 +78,8 @@ void Model::load(const char* assetFileName)
 			{
 				loadNodeRecursive(model, 0, parentMatrix);
 			}
+			// get max min points model
+			calculateAABB();
 		}
 	}
 }
@@ -100,8 +103,8 @@ void Model::loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const
 		for (const tinygltf::Primitive& primitive : srcMesh.primitives)
 		{
 			Mesh* mesh = new Mesh();
-			mesh->load(model, srcMesh, primitive, nodeIndex);
 			mesh->setMatrix(globalMatrix);
+			mesh->load(model, srcMesh, primitive, nodeIndex);
 			meshes.push_back(mesh);
 		}
 	}
@@ -199,4 +202,21 @@ void Model::setTexture(const char* texturePath)
 {
 	cleanTextures();
 	loadTexture(texturePath);
+}
+
+void Model::calculateAABB()
+{
+	float3 globalMin(FLT_MAX, FLT_MAX, FLT_MAX);
+	float3 globalMax(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+	for (const Mesh* mesh : meshes)
+	{
+		const float3& meshMin = mesh->getMinPoint();
+		const float3& meshMax = mesh->getMaxPoint();
+
+		globalMin = math::Min(globalMin, meshMin);
+		globalMax = math::Max(globalMax, meshMax);
+	}
+
+	modelAABB = AABB(globalMin, globalMax);
 }

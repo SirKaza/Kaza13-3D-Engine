@@ -3,6 +3,8 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
+#include "ModuleRender.h"
+#include "Model.h"
 #include "Math/MathNamespace.h"
 #include "Math/MathConstants.h"
 #include "Math/float3.h"
@@ -61,8 +63,49 @@ update_status ModuleCamera::Update()
 	int mouseWheel = input->getMouseWheelY();
 	input->getMouseMotion(dx, dy);
 
+
+	// Alt pressed
+	if (keyboard[SDL_SCANCODE_LALT])
+	{
+		// Alt + Left click: orbit
+		if ((mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)))
+		{
+
+		}
+		// Alt + Right click: zoom
+		else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT))
+		{
+			float zoomSpeed = ZOOM_SPEED;
+			float3 zoomDirection = frustum.front * (dy * zoomSpeed);
+
+			setPosition(frustum.pos + zoomDirection);
+		}
+	}
+	// F pressed: focus
+	else if (keyboard[SDL_SCANCODE_F])
+	{
+		focusModel();
+	}
+	// Middle click: drag
+	else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_MIDDLE))
+	{
+		float sensitivity = DRAG_SENSITIVITY;
+
+		float3 moveDirection = frustum.WorldRight() * (-dx * sensitivity) +
+			frustum.up * (dy * sensitivity);
+
+		setPosition(frustum.pos + moveDirection);
+	}
+	// Wheel movement for zooming
+	else if (mouseWheel != 0)
+	{
+		float zoomSpeed = WHEEL_SPEED;
+		float3 zoomDirection = frustum.front * (mouseWheel * zoomSpeed);
+
+		setPosition(frustum.pos + zoomDirection);
+	}
 	// Right click pressed
-	if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT))
+	else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT))
 	{
 		// Right click + WASD/QE: movement
 		if (keyboard[SDL_SCANCODE_Q] || keyboard[SDL_SCANCODE_E] || keyboard[SDL_SCANCODE_W] || keyboard[SDL_SCANCODE_S] || keyboard[SDL_SCANCODE_A] || keyboard[SDL_SCANCODE_D])
@@ -82,16 +125,6 @@ update_status ModuleCamera::Update()
 				setPosition(frustum.pos + moveDirection * speed * deltaTime);
 			}
 		}
-		
-		// Alt + Right click: zoom
-		else if (keyboard[SDL_SCANCODE_LALT]) 
-		{
-			float zoomSpeed = ZOOM_SPEED;
-			float3 zoomDirection = frustum.front * (dy * zoomSpeed);
-
-			setPosition(frustum.pos + zoomDirection);
-		}
-		
 		// Right click: rotate
 		else 
 		{
@@ -99,10 +132,10 @@ update_status ModuleCamera::Update()
 			float yaw = DegToRad(dx * sensitivity);
 			float pitch = DegToRad(dy * sensitivity);
 
-			static float accPitch = frustum.up.y; 
-			const float topRef = frustum.up.y;
-
-			if ((PITCH_LIMIT + topRef >= accPitch + pitch) && (accPitch + pitch >= -PITCH_LIMIT + topRef))
+			static float accPitch = frustum.up.z; 
+			
+			float newPitch = accPitch + pitch;
+			if (newPitch <= PITCH_LIMIT && newPitch >= -PITCH_LIMIT)
 			{
 				accPitch += pitch;
 				Quat yawRotation = Quat::RotateY(yaw);
@@ -115,26 +148,6 @@ update_status ModuleCamera::Update()
 			}
 		}
 	}
-	// Middle click: drag
-	else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_MIDDLE))
-	{
-		float sensitivity = DRAG_SENSITIVITY;
-		
-		float3 moveDirection = frustum.WorldRight() * (-dx * sensitivity) +
-			frustum.up * (dy * sensitivity);
-
-		setPosition(frustum.pos + moveDirection);
-	}
-
-	// Wheel movement for zooming
-	else if (mouseWheel != 0)
-	{
-		float zoomSpeed = WHEEL_SPEED;
-		float3 zoomDirection = frustum.front * (mouseWheel * zoomSpeed);
-
-		setPosition(frustum.pos + zoomDirection);
-	}
-
 	return UPDATE_CONTINUE;
 }
 
@@ -169,7 +182,7 @@ void ModuleCamera::setPlaneDistances(float nearPlane, float farPlane)
 	frustum.farPlaneDistance = farPlane;
 }
 
-float4x4 ModuleCamera::LookAt(const float3& eye, const float3& target, const float3& up)
+float4x4 ModuleCamera::lookAt(const float3& eye, const float3& target, const float3& up) const
 {
 	float3 forward = (target - eye).Normalized();
 	float3 right;
@@ -185,11 +198,29 @@ float4x4 ModuleCamera::LookAt(const float3& eye, const float3& target, const flo
 	
 	float3 up_corrected = right.Cross(forward).Normalized();
 
-	float4x4 view;
-	view.SetRow(0, float4(right, -eye.Dot(right)));
-	view.SetRow(1, float4(up_corrected, -eye.Dot(up_corrected)));
-	view.SetRow(2, float4(-forward, eye.Dot(forward)));
-	view.SetRow(3, float4(0.0f, 0.0f, 0.0f, 1.0f));
+	float4x4 viewMatrix;
+	viewMatrix.SetRow(0, float4(right, -eye.Dot(right)));
+	viewMatrix.SetRow(1, float4(up_corrected, -eye.Dot(up_corrected)));
+	viewMatrix.SetRow(2, float4(-forward, eye.Dot(forward)));
+	viewMatrix.SetRow(3, float4(0.0f, 0.0f, 0.0f, 1.0f));
 
-	return view;
+	return viewMatrix;
+}
+
+void ModuleCamera::focusModel()
+{
+	AABB modelAABB = App->GetRender()->getModel()->getAABB();
+	float3 center = modelAABB.CenterPoint();
+
+	float distance = (modelAABB.maxPoint - modelAABB.minPoint).Length() * 1.2f;
+
+	float3 direction = frustum.front.Normalized();
+	float3 newPosition = center - direction * distance;
+	frustum.pos = newPosition;
+
+	frustum.front = (center - newPosition).Normalized(); // camera looking at model
+
+	float4x4 viewMatrix = lookAt(newPosition, center, frustum.up);
+
+	frustum.up = float3(viewMatrix[1][0], viewMatrix[1][1], viewMatrix[1][2]).Normalized(); // orientation
 }
