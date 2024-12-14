@@ -9,9 +9,12 @@
 #include "ModuleCamera.h"
 #include "ModuleOpenGL.h"
 #include "ModuleTexture.h"
+#include "ModuleRender.h"
+#include "Model.h"
 #include "SDL.h"
 #include <GL/glew.h>
 #include "DirectXTex.h"
+#include "Math/float4.h"
 
 // global variables
 ConsoleEditor myConsole;
@@ -32,26 +35,30 @@ update_status EditorMenu::Draw()
     {
         if (ImGui::BeginMenu("View"))
         {
-            if (ImGui::MenuItem("Console", "", editor_data.ShowConsole)) { editor_data.ShowConsole = !editor_data.ShowConsole; }
-            if (ImGui::MenuItem("Configuration", "", editor_data.ShowConfiguration)) { editor_data.ShowConfiguration = !editor_data.ShowConfiguration; }
+            if (ImGui::MenuItem("Console", "", editor_data.showConsole)) { editor_data.showConsole = !editor_data.showConsole; }
+            if (ImGui::MenuItem("Configuration", "", editor_data.showConfiguration)) { editor_data.showConfiguration = !editor_data.showConfiguration; }
+            if (ImGui::MenuItem("Properties", "", editor_data.showProperties)) { editor_data.showProperties = !editor_data.showProperties; }
             ImGui::Separator();
             char menuText[64];
             std::snprintf(menuText, sizeof(menuText), "About %s", ENGINE_NAME);
-            if (ImGui::MenuItem(menuText, "", editor_data.ShowAbout)) { editor_data.ShowAbout = !editor_data.ShowAbout; }
+            if (ImGui::MenuItem(menuText, "", editor_data.showAbout)) { editor_data.showAbout = !editor_data.showAbout; }
             if (ImGui::MenuItem("Quit")) { return UPDATE_STOP; }
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
     }
 
-    if (editor_data.ShowConsole) myConsole.Draw("Console", &editor_data.ShowConsole);
-    if (editor_data.ShowConfiguration) showConfigurationWindow(&editor_data.ShowConfiguration);
-    if (editor_data.ShowAbout) showAboutWindow(&editor_data.ShowAbout);
+    if (editor_data.showConsole) myConsole.Draw("Console", &editor_data.showConsole);
+    if (editor_data.showConfiguration) showConfigurationWindow(&editor_data.showConfiguration);
+    if (editor_data.showProperties) showPropertiesWindow(&editor_data.showProperties);
+    if (editor_data.showAbout) showAboutWindow(&editor_data.showAbout);
     return UPDATE_CONTINUE;
 }
 
 void EditorMenu::showConfigurationWindow(bool* p_open)
 {
+    ImGui::SetNextWindowSize(ImVec2(width * 0.2f, height * 0.4f), ImGuiCond_Once);
+
     if (!ImGui::Begin("Configuration", p_open))
     {
         ImGui::End();
@@ -357,8 +364,126 @@ void EditorMenu::showConfigurationWindow(bool* p_open)
     ImGui::End();
 }
 
-void EditorMenu::showAboutWindow(bool* p_open)
+void EditorMenu::showPropertiesWindow(bool* p_open) const
 {
+    ImGui::SetNextWindowSize(ImVec2(width * 0.15f, height*0.3f), ImGuiCond_Once);
+
+    if (!ImGui::Begin("Properties", p_open))
+    {
+        ImGui::End();
+        return;
+    }
+
+    if (ImGui::CollapsingHeader("Geometry"))
+    {
+        const std::vector<Mesh*>& meshes = App->GetRender()->getModel()->getMeshes();
+
+        static int currentMeshIndex = 0;
+
+        static int lastMeshCount = -1;
+
+        if (meshes.size() != lastMeshCount) { // meshes changed
+            currentMeshIndex = 0;
+            lastMeshCount = meshes.size();
+        }
+
+        if (!meshes.empty())
+        {
+            std::vector<const char*> meshNames;
+            for (Mesh* mesh : meshes)
+            {
+                meshNames.push_back(mesh->getName());
+            }
+
+            if (ImGui::Combo("Select Mesh", &currentMeshIndex, meshNames.data(), static_cast<int>(meshNames.size())))
+            {
+            }
+
+            Mesh* selectedMesh = meshes[currentMeshIndex];
+
+            // Mesh Name
+            ImGui::Text("Name:");
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", selectedMesh->getName());
+
+            // Mesh Triangles count
+            int vertexCount = selectedMesh->getNumIndices();
+            int triangleCount = vertexCount / 3;
+            ImGui::Text("Triangles:");
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d", triangleCount);
+
+            // Total Vertexs with/without indices
+            ImGui::Text("Vertices:");
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d", vertexCount);
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Materials"))
+    {
+        const std::vector<ModuleTexture*>& textures = App->GetRender()->getModel()->getTextures();
+
+        static int currentTextureIndex = 0;
+
+        static int lastTextureCount = -1;
+
+        if (textures.size() != lastTextureCount) { // textures changed
+            currentTextureIndex = 0;
+            lastTextureCount = textures.size();
+        }
+
+        if (!textures.empty())
+        {
+            std::vector<const char*> textureNames;
+            for (ModuleTexture* texture : textures)
+            {
+                textureNames.push_back(texture->getName());
+            }
+
+            if (ImGui::Combo("Select Material", &currentTextureIndex, textureNames.data(), static_cast<int>(textureNames.size())))
+            {
+            }
+
+            ModuleTexture* texture = textures[currentTextureIndex];
+
+            // Display material info
+            ImGui::Text("Name:");
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", texture->getName());
+
+            if (texture->getTextureID() != 0) // isTexture
+            {
+                const DirectX::ScratchImage& image = texture->getScratchImage();
+                const DirectX::TexMetadata& metadata = image.GetMetadata();
+
+                ImGui::Text("Width:");
+                ImGui::SameLine();
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d", metadata.width);
+
+                ImGui::Text("Height:");
+                ImGui::SameLine();
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%d", metadata.height);
+
+                ImGui::Text("Format:");
+                ImGui::SameLine();
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", texture->DXGIFormatToString(metadata.format));
+            }
+            else { // isColor
+                float4 color = texture->getBaseColor();
+                ImGui::Text("Color:");
+                ImGui::SameLine();
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "(%.3f, %.3f, %.3f, %.3f)", color[0], color[1], color[2], color[3]);
+            }
+        }
+    }
+
+    ImGui::End();
+}
+
+void EditorMenu::showAboutWindow(bool* p_open) const
+{
+    ImGui::SetNextWindowSize(ImVec2(width * 0.25f, height * 0.4f), ImGuiCond_Once);
     char menuText[64];
     std::snprintf(menuText, sizeof(menuText), "About %s", ENGINE_NAME);
     if (!ImGui::Begin(menuText, p_open))

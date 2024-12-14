@@ -41,6 +41,7 @@ bool ModuleEditor::Init()
 
     menu = new EditorMenu();
     menu->setWindowFlags(App->GetWindow()->getInitWindowFlags());
+    menu->setDisplayWH(App->GetWindow()->getDisplayW(), App->GetWindow()->getDisplayH());
 
     return true;
 }

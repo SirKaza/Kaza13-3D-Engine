@@ -107,7 +107,8 @@ void Model::loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const
 			mesh->setMatrix(globalMatrix);
 			mesh->setScale(scaling);
 			mesh->load(model, srcMesh, primitive, nodeIndex);
-			ENGINE_LOG("%s mesh created", model.meshes[node.mesh].name.c_str());
+			mesh->setName(model.meshes[node.mesh].name.c_str());
+			ENGINE_LOG("%s mesh created", mesh->getName());
 			meshes.push_back(mesh);
 		}
 	}
@@ -148,6 +149,7 @@ void Model::loadMaterials(const tinygltf::Model& srcModel)
 				static_cast<float>(srcMaterial.pbrMetallicRoughness.baseColorFactor[3]) : 1.0f);
 			ModuleTexture* textureModule = new ModuleTexture();
 			textureModule->setBaseColor(color);
+			textureModule->setName(srcMaterial.name.c_str());
 			textures.push_back(textureModule);
 		}
 	}

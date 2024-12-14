@@ -24,8 +24,12 @@ public:
 	const float3& getMaxPoint() const { return maxPoint; }
 
 	void setScale(const float3& scaling) { scale = scaling; }
+	void setName(const char* name) { meshName = name; }
+	const char* getName() const { return meshName.c_str(); }
+	int getNumIndices() const { return static_cast<int>(numIndices); }
 
 private:
+	std::string meshName;
 	unsigned vao;
 	unsigned vbo;
 	unsigned ebo;

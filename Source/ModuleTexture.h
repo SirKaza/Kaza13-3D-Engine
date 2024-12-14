@@ -45,10 +45,14 @@ public:
 
 	const char* DXGIFormatToString(DXGI_FORMAT format);
 
-	void setBaseColor(const float4 color) { baseColor = color; }
+	void setBaseColor(const float4& color) { baseColor = color; }
 	float4 getBaseColor() const { return baseColor; }
 
+	void setName(const char* name) { textureName = name; }
+	const char* getName() const { return textureName.c_str(); }
+
 private:
+	std::string textureName;
 	std::unique_ptr<DirectX::ScratchImage> scratchImage;
 	float4 baseColor;
 

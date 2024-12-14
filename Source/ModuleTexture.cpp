@@ -19,6 +19,8 @@ ModuleTexture::~ModuleTexture()
 
 unsigned int ModuleTexture::load(const char* imagePath)
 {
+	textureName = imagePath;
+
 	if (!loadTextureToCPU(imagePath))
 		return 0;
 

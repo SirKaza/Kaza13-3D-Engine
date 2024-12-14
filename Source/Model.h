@@ -4,6 +4,7 @@
 #include "Math/float4x4.h"
 #include "Geometry/AABB.h"
 #include "Math/float3.h"
+#include "Math/float4.h"
 
 class tinygltf::Model;
 
@@ -28,6 +29,9 @@ public:
 	void setTexture(const char* texturePath);
 	void calculateAABB();
 	const AABB& getAABB() const { return modelAABB; }
+
+	const std::vector<Mesh*>& getMeshes() const { return meshes; }
+	const std::vector<ModuleTexture*>& getTextures() const { return textures; }
 
 private:
 	std::vector<Mesh*> meshes;
