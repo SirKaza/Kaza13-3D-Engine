@@ -19,7 +19,10 @@ ModuleTexture::~ModuleTexture()
 
 unsigned int ModuleTexture::load(const char* imagePath)
 {
-	textureName = imagePath;
+	std::string path(imagePath);
+	size_t pos = path.find_last_of("/\\");
+	std::string fileName = path.substr(pos + 1);
+	textureName = fileName;
 
 	if (!loadTextureToCPU(imagePath))
 		return 0;
