@@ -13,7 +13,7 @@
 #include "Geometry/AABB.h"
 #include "Math/float3.h"
 
-Model::Model() : meshes(), textures(), scaling(float3::one), nodeCont(0)
+Model::Model() : meshes(), textures(), nodeCont(0)
 {
 	
 }
@@ -92,8 +92,9 @@ void Model::loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const
 		return;
 
 	const tinygltf::Node& node = model.nodes[nodeIndex];
-
-	float4x4& localMatrix = getMatrixFromNode(node);
+	float4x4 localMatrix;
+	float3 scaling = float3::one;
+	getMatrixFromNode(node, localMatrix, scaling);
 	float4x4 globalMatrix = parentMatrix * localMatrix;
 
 	// if node has mesh
@@ -162,21 +163,20 @@ void Model::loadTexture(const char* texturePath)
 	if (textureId != 0) textures.push_back(textureModule);
 }
 
-float4x4& Model::getMatrixFromNode(const tinygltf::Node& node)
+void Model::getMatrixFromNode(const tinygltf::Node& node, float4x4& localMatrix, float3& scaling)
 {
-	float4x4 modelMatrix;
 	if (!node.matrix.empty())
 	{
-		modelMatrix = float4x4(
-			node.matrix[0], node.matrix[1], node.matrix[2], node.matrix[3],
-			node.matrix[4], node.matrix[5], node.matrix[6], node.matrix[7],
-			node.matrix[8], node.matrix[9], node.matrix[10], node.matrix[11],
-			node.matrix[12], node.matrix[13], node.matrix[14], node.matrix[15]
+		localMatrix = float4x4(
+			static_cast<float>(node.matrix[0]), static_cast<float>(node.matrix[1]), static_cast<float>(node.matrix[2]), static_cast<float>(node.matrix[3]),
+			static_cast<float>(node.matrix[4]), static_cast<float>(node.matrix[5]), static_cast<float>(node.matrix[6]), static_cast<float>(node.matrix[7]),
+			static_cast<float>(node.matrix[8]), static_cast<float>(node.matrix[9]), static_cast<float>(node.matrix[10]), static_cast<float>(node.matrix[11]),
+			static_cast<float>(node.matrix[12]), static_cast<float>(node.matrix[13]), static_cast<float>(node.matrix[14]), static_cast<float>(node.matrix[15])
 		);
 		
 		if (nodeCont == 0)
 		{
-			scaling = modelMatrix.GetScale();
+			scaling = localMatrix.GetScale();
 		}
 	}
 	else
@@ -204,12 +204,9 @@ float4x4& Model::getMatrixFromNode(const tinygltf::Node& node)
 			scaling = scale;
 		}
 
-		modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
-
-		
+		localMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
 	}
 	nodeCont++;
-	return modelMatrix;
 }
 
 void Model::setTexture(const char* texturePath)

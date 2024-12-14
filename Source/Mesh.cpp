@@ -63,7 +63,7 @@ void Mesh::load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 		// load min and max points of mesh
 		if (!posAcc.minValues.empty() && !posAcc.maxValues.empty())
 		{
-			for (size_t i = 0; i < 3; ++i)
+			for (int i = 0; i < 3; ++i)
 			{
 				minPoint[i] = static_cast<float>(posAcc.minValues[i] * scale[i]);
 				maxPoint[i] = static_cast<float>(posAcc.maxValues[i] * scale[i]);
@@ -147,7 +147,7 @@ void Mesh::render(const std::vector<ModuleTexture*>& textures)
 	{
 		if (materialIndex >= textures.size())
 		{
-			materialIndex = textures.size() - 1;
+			materialIndex = static_cast<unsigned int>(textures.size() - 1);
 		}
 
 		if (textures[materialIndex] != nullptr)

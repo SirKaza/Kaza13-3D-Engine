@@ -25,7 +25,7 @@ public:
 
 	void render();
 
-	float4x4& getMatrixFromNode(const tinygltf::Node& node);
+	void getMatrixFromNode(const tinygltf::Node& node, float4x4& localMatrix, float3& scaling); // nodeCont modify here
 	void setTexture(const char* texturePath);
 	void calculateAABB();
 	const AABB& getAABB() const { return modelAABB; }
@@ -37,7 +37,6 @@ private:
 	std::vector<Mesh*> meshes;
 	std::vector<ModuleTexture*> textures; // materials (textures and colors)
 	AABB modelAABB;
-	float3 scaling;
 	int nodeCont;
 };
 
