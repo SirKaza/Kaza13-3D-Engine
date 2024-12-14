@@ -1,11 +1,8 @@
-#ifdef _DEBUG
-#include <vld.h> // memory leaks check
-#endif
-
 #include <stdlib.h>
 #include "Application.h"
 #include "ModuleOpenGL.h"
 #include "Globals.h"
+#include "FrameData.h"
 
 #include "SDL/include/SDL.h"
 #pragma comment( lib, "SDL/lib/x64/SDL2.lib" )
@@ -91,6 +88,10 @@ int main(int argc, char ** argv)
 
 		}
 	}
+	fps_log.clear();
+	fps_log.shrink_to_fit();
+	ms_log.clear();
+	ms_log.shrink_to_fit();
 
 	delete App;
 	ENGINE_LOG("Bye :)\n");

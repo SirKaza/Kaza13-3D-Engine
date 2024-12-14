@@ -54,9 +54,9 @@ void Model::cleanMeshes()
 void Model::load(const char* assetFileName)
 {
 	tinygltf::TinyGLTF gltfContext;
-	tinygltf::Model model;
 	std::string error, warning;
 
+	tinygltf::Model model;
 	bool loadOk = gltfContext.LoadASCIIFromFile(&model, &error, &warning, assetFileName);
 	if (!loadOk)
 	{
