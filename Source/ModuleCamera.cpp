@@ -214,7 +214,7 @@ void ModuleCamera::focusModel()
 	AABB modelAABB = App->GetRender()->getModel()->getAABB();
 	float3 center = modelAABB.CenterPoint();
 
-	float distance = (modelAABB.maxPoint - modelAABB.minPoint).Length() * 1.2f;
+	float distance = (modelAABB.maxPoint - modelAABB.minPoint).Length() * 1.5f;
 
 	float3 direction = frustum.front.Normalized();
 	float3 newPosition = center - direction * distance;
