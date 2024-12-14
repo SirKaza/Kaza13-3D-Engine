@@ -22,7 +22,10 @@ unsigned int ModuleTexture::load(const char* imagePath)
 	std::string path(imagePath);
 	size_t pos = path.find_last_of("/\\");
 	std::string fileName = path.substr(pos + 1);
-	textureName = fileName;
+	if (!fileName.empty())
+		textureName = fileName;
+	else
+		textureName = imagePath;
 
 	if (!loadTextureToCPU(imagePath))
 		return 0;
