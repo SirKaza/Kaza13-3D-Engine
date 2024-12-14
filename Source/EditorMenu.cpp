@@ -521,13 +521,15 @@ void EditorMenu::showAboutWindow(bool* p_open) const
     ImGui::TextLinkOpenURL("Releases", "https://github.com/SirKaza/Kaza13-3D-Engine/releases");
 
     ImGui::Separator();
-    ImGui::Text("Game engine developed with OpenGL3 as part of a Video Game Master's Project at UPC.");
+    ImGui::Text("Game engine developed with OpenGL as part of a Video Game Master's Project at UPC.");
     ImGui::Text("By Marc Casanova Torrequebrada.");
     ImGui::Text("Libraries:");
-    ImGui::Text(" - Window: SDL, v2");
-    ImGui::Text(" - OpenGL extensions: Glew, v2.1.0");
-    ImGui::Text(" - Editor: Dear ImGui, v1.91.5");
-    ImGui::Text(" - More to add...");
+    ImGui::Text(" - Window: SDL v2.0.16");
+    ImGui::Text(" - OpenGL: v4.6.0");
+    ImGui::Text(" - OpenGL extensions: Glew v2.1.0");
+    ImGui::Text(" - Editor: Dear ImGui v1.91.5");
+    ImGui::Text(" - Textures: DirectXTex v2.0.6");
+    ImGui::Text(" - Geometry loader: TinyGLTF v2.9.3");
     ImGui::Text("%s is licensed under the MIT License, see LICENSE for more information.", ENGINE_NAME);
 
     static bool show_config_info = false;

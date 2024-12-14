@@ -139,16 +139,13 @@ public:
         }
 
         ImGui::TextWrapped(
-            "Console with basic coloring, completion (TAB key) and history (Up/Down keys). A more elaborate "
-            "implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
+            "Console that displays output from game engine with completion (TAB key) and history (Up/Down keys).");
         ImGui::TextWrapped("Enter 'HELP' for help.");
 
-        // TODO: display items starting from the bottom
-
-        if (ImGui::SmallButton("Add Debug Text")) { AddLog("%d some text", Items.size()); AddLog("some more text"); AddLog("display very important message here!"); }
+        /*if (ImGui::SmallButton("Add Debug Text")) { AddLog("%d some text", Items.size()); AddLog("some more text"); AddLog("display very important message here!"); }
         ImGui::SameLine();
         if (ImGui::SmallButton("Add Debug Error")) { AddLog("[error] something went wrong"); }
-        ImGui::SameLine();
+        ImGui::SameLine();*/
         if (ImGui::SmallButton("Clear")) { ClearLog(); }
         ImGui::SameLine();
         bool copy_to_clipboard = ImGui::SmallButton("Copy");
@@ -168,7 +165,7 @@ public:
         if (ImGui::Button("Options"))
             ImGui::OpenPopup("Options");
         ImGui::SameLine();
-        Filter.Draw("Filter (\"incl,-excl\") (\"error\")", 180);
+        Filter.Draw("Filter (\"incl,-excl\")", 180); //  (\"error\")
         ImGui::Separator();
 
         // Reserve enough left-over height for 1 separator + 1 input text

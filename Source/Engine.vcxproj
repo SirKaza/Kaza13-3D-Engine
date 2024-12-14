@@ -216,7 +216,6 @@
     <ClInclude Include="EditorMenu.h" />
     <ClInclude Include="FrameData.h" />
     <ClInclude Include="Globals.h" />
-    <ClInclude Include="LogEditor.h" />
     <ClInclude Include="MathGeoLib\include\Algorithm\Random\LCG.h" />
     <ClInclude Include="MathGeoLib\include\Geometry\AABB.h" />
     <ClInclude Include="MathGeoLib\include\Geometry\AABB2D.h" />

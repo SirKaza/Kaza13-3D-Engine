@@ -450,9 +450,6 @@
     <ClInclude Include="FrameData.h">
       <Filter>MenuEditor\Others</Filter>
     </ClInclude>
-    <ClInclude Include="LogEditor.h">
-      <Filter>MenuEditor\Others</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Modules">
