@@ -74,7 +74,7 @@ unsigned int ModuleTexture::load(const char* imagePath)
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	ENGINE_LOG("Texture loaded successfully (ID: %u)", textureID);	
+	ENGINE_LOG("Texture loaded successfully (ID: %u) from %s", textureID, imagePath);
 	return textureID;
 }
 

@@ -13,7 +13,7 @@
 #include "Geometry/AABB.h"
 #include "Math/float3.h"
 
-Model::Model() : meshes(), textures(), scaling(float3::one)
+Model::Model() : meshes(), textures(), scaling(float3::one), nodeCont(0)
 {
 	
 }
@@ -28,11 +28,11 @@ void Model::cleanTextures()
 {
 	if (!textures.empty())
 	{
-		ENGINE_LOG("%d Texture cleaned up successfully", textures.size());
 		for (ModuleTexture* texture : textures)
 		{
 			delete texture;
 		}
+		ENGINE_LOG("%d Texture cleaned up successfully", textures.size());
 		textures.clear();
 	}
 }
@@ -41,11 +41,11 @@ void Model::cleanMeshes()
 {
 	if (!meshes.empty())
 	{
-		ENGINE_LOG("%d Meshes cleaned up successfully", meshes.size());
 		for (Mesh* mesh : meshes)
 		{
 			delete mesh;
 		}
+		ENGINE_LOG("%d Meshes cleaned up successfully", meshes.size());
 		meshes.clear();
 	}
 }
@@ -107,6 +107,7 @@ void Model::loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const
 			mesh->setMatrix(globalMatrix);
 			mesh->setScale(scaling);
 			mesh->load(model, srcMesh, primitive, nodeIndex);
+			ENGINE_LOG("%s mesh created", model.meshes[node.mesh].name.c_str());
 			meshes.push_back(mesh);
 		}
 	}
@@ -170,6 +171,11 @@ float4x4& Model::getMatrixFromNode(const tinygltf::Node& node)
 			node.matrix[8], node.matrix[9], node.matrix[10], node.matrix[11],
 			node.matrix[12], node.matrix[13], node.matrix[14], node.matrix[15]
 		);
+		
+		if (nodeCont == 0)
+		{
+			scaling = modelMatrix.GetScale();
+		}
 	}
 	else
 	{
@@ -197,8 +203,11 @@ float4x4& Model::getMatrixFromNode(const tinygltf::Node& node)
 		}
 
 		modelMatrix = float4x4::FromTRS(translation, rotationMatrix, scale);
-		return modelMatrix;
+
+		
 	}
+	nodeCont++;
+	return modelMatrix;
 }
 
 void Model::setTexture(const char* texturePath)

@@ -34,5 +34,6 @@ private:
 	std::vector<ModuleTexture*> textures;
 	AABB modelAABB;
 	float3 scaling;
+	int nodeCont;
 };
 
