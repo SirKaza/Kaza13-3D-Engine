@@ -14,8 +14,10 @@ public:
 	update_status Update() override;
 
 	Frustum getFrustum() const { return frustum; }
-	float getAspectRatio() const;
 
+	void rotateCamera(float yaw, float pitch, float sensitivity);
+
+	float getAspectRatio() const;
 	void setFOV(int horizontal);
 	int getFOV() const;
 	void setAspectRatio(float aspect);

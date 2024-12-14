@@ -16,12 +16,10 @@
 
 ModuleCamera::ModuleCamera()
 {
-
 }
 
 ModuleCamera::~ModuleCamera()
 {
-
 }
 
 bool ModuleCamera::Init()
@@ -72,7 +70,14 @@ update_status ModuleCamera::Update()
 		// Alt + Left click: orbit
 		if ((mouseButtons & SDL_BUTTON(SDL_BUTTON_LEFT)))
 		{
+			float sensitivity = ORBITAL_SENSITIVITY;
 
+			float yaw = DegToRad(dx * sensitivity);
+			float pitch = DegToRad(dy * sensitivity);
+
+			rotateCamera(yaw, pitch, sensitivity); // rotate first
+
+			focusModel(); // then orbit around model
 		}
 		// Alt + Right click: zoom
 		else if (mouseButtons & SDL_BUTTON(SDL_BUTTON_RIGHT))
@@ -134,23 +139,31 @@ update_status ModuleCamera::Update()
 			float yaw = DegToRad(dx * sensitivity);
 			float pitch = DegToRad(dy * sensitivity);
 
-			static float accPitch = frustum.up.z; 
-			
-			float newPitch = accPitch + pitch;
-			if (newPitch <= PITCH_LIMIT && newPitch >= -PITCH_LIMIT)
-			{
-				accPitch += pitch;
-				Quat yawRotation = Quat::RotateY(yaw);
-				Quat pitchRotation = Quat::RotateAxisAngle(frustum.WorldRight(), pitch);
-
-				frustum.front = (yawRotation * pitchRotation).Transform(frustum.front).Normalized();
-				frustum.up = (yawRotation * pitchRotation).Transform(frustum.up).Normalized();
-
-				setOrientation(frustum.front, frustum.up);
-			}
+			rotateCamera(yaw, pitch, sensitivity);
 		}
 	}
 	return UPDATE_CONTINUE;
+}
+
+void ModuleCamera::rotateCamera(float yaw, float pitch, float sensitivity)
+{
+	static float accumulatedPitch = frustum.up.z;
+
+	float newPitch = accumulatedPitch + pitch;
+	if (newPitch <= PITCH_LIMIT && newPitch >= -PITCH_LIMIT)
+	{
+		accumulatedPitch += pitch;
+
+		// rotation with Quats
+		Quat yawRotation = Quat::RotateY(yaw);
+		Quat pitchRotation = Quat::RotateAxisAngle(frustum.WorldRight(), pitch);
+
+		// rotate camera
+		float3 front = (yawRotation * pitchRotation).Transform(frustum.front);
+		float3 up = (yawRotation * pitchRotation).Transform(frustum.up);
+
+		setOrientation(front, up);
+	}
 }
 
 float ModuleCamera::getAspectRatio() const
@@ -168,7 +181,6 @@ void ModuleCamera::setFOV(int horizontal)
 
 int ModuleCamera::getFOV() const
 {
-
 	return static_cast<int>(RadToDeg(frustum.horizontalFov));
 }
 
@@ -218,11 +230,10 @@ void ModuleCamera::focusModel()
 
 	float3 direction = frustum.front.Normalized();
 	float3 newPosition = center - direction * distance;
-	frustum.pos = newPosition;
 
-	frustum.front = (center - newPosition).Normalized(); // camera looking at model
+	setPosition(newPosition);
 
 	float4x4 viewMatrix = lookAt(newPosition, center, frustum.up);
 
-	frustum.up = float3(viewMatrix[1][0], viewMatrix[1][1], viewMatrix[1][2]).Normalized(); // orientation
+	setOrientation((center - newPosition), float3(viewMatrix[1][0], viewMatrix[1][1], viewMatrix[1][2]));
 }

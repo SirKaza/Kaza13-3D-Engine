@@ -39,6 +39,7 @@ struct WindowFlags
 #define DRAG_SENSITIVITY 0.01f
 #define ZOOM_SPEED 0.05f
 #define WHEEL_SPEED 0.5f
+#define ORBITAL_SENSITIVITY 0.1f
 #define PITCH_LIMIT DegToRad(45.0f)
 
 // Configuration -----------
