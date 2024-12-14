@@ -49,6 +49,6 @@ struct WindowFlags
 #define VSYNC true
 #define TITLE "Super Awesome Engine"
 #define GLSL_VERSION "#version 460"
-#define ENGINE_VERSION "0.1.0"
+#define ENGINE_VERSION "1.0.0"
 #define ENGINE_NAME "Kaza13"
 #define ORGANIZATION_NAME "UPC TALENT"
