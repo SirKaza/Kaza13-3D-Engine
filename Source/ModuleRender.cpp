@@ -24,6 +24,7 @@ ModuleRender::~ModuleRender()
 bool ModuleRender::Init()
 {
 	auto* program_module = App->GetProgram();
+
 	char* vtx_shader = program_module->LoadShaderSource("./default_vertex.glsl");
 	char* frg_shader = program_module->LoadShaderSource("./default_fragment.glsl");
 
@@ -36,7 +37,11 @@ bool ModuleRender::Init()
 	free(frg_shader);
 
 	model = std::make_unique<Model>();
+#ifdef NDEBUG
+	model->load("./Game/assets/BakerHouse.gltf");
+#else
 	model->load("BakerHouse.gltf");
+#endif
 
 	return true;
 }

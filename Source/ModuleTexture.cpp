@@ -27,8 +27,10 @@ unsigned int ModuleTexture::load(const char* imagePath)
 	else
 		textureName = imagePath;
 
-	if (!loadTextureToCPU(imagePath))
+	if (!loadTextureToCPU(imagePath)) {
+		ENGINE_LOG("Texture %s could not be loaded", imagePath)
 		return 0;
+	}
 
 	const DirectX::TexMetadata metadata = scratchImage->GetMetadata();
 
