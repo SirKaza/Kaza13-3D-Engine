@@ -52,7 +52,7 @@ Editor sections are the following:
 
 ## **Comments**
 
-Available models are with their corresponding textures:
+Available models with their corresponding textures:
   - Triangle
   - TriangleWithoutIndices
   - Box
@@ -61,6 +61,8 @@ Available models are with their corresponding textures:
   - BakerHouse
   - Duck
   - CesiumMilkTruck
+
+Also, Baboon.png texture is included because is nice for seeing texture filters in different models.
 
 This game engine loads and renders colors and diffuse textures in ModuleTextures.
 
