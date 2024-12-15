@@ -21,7 +21,7 @@ public:
 	void loadMaterials(const tinygltf::Model& srcModel);
 	void loadTexture(const char* texturePath);
 	float4x4& loadModelMatrix(const tinygltf::Model& model, int rootNode) const;
-	void loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const float4x4& parentMatrix);
+	void loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const float4x4& parentMatrix, float3& scaling);
 
 	void render();
 

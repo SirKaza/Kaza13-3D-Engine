@@ -70,14 +70,15 @@ void Model::load(const char* assetFileName)
 		if (!model.nodes.empty())
 		{
 			const float4x4& parentMatrix = float4x4::identity;
+			float3 scaling = float3::one;
 			if (!model.scenes.empty() && !model.scenes[0].nodes.empty())
 			{
 				// starting node rootNode
-				loadNodeRecursive(model, model.scenes[0].nodes[0], parentMatrix);
+				loadNodeRecursive(model, model.scenes[0].nodes[0], parentMatrix, scaling);
 			}
 			else
 			{
-				loadNodeRecursive(model, 0, parentMatrix);
+				loadNodeRecursive(model, 0, parentMatrix, scaling);
 			}
 			// get max min points model
 			calculateAABB();
@@ -85,7 +86,7 @@ void Model::load(const char* assetFileName)
 	}
 }
 
-void Model::loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const float4x4& parentMatrix)
+void Model::loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const float4x4& parentMatrix, float3& scaling)
 {
 	// same nodes as meshes and there is scene
 	if (nodeIndex < 0 || nodeIndex >= model.nodes.size())
@@ -93,7 +94,6 @@ void Model::loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const
 
 	const tinygltf::Node& node = model.nodes[nodeIndex];
 	float4x4 localMatrix;
-	float3 scaling = float3::one;
 	getMatrixFromNode(node, localMatrix, scaling);
 	float4x4 globalMatrix = parentMatrix * localMatrix;
 
@@ -118,7 +118,7 @@ void Model::loadNodeRecursive(const tinygltf::Model& model, int nodeIndex, const
 	for (size_t i = 0; i < node.children.size(); ++i)
 	{
 		int childIndex = node.children[i];
-		loadNodeRecursive(model, childIndex, globalMatrix);
+		loadNodeRecursive(model, childIndex, globalMatrix, scaling);
 	}
 }
 
@@ -138,7 +138,14 @@ void Model::loadMaterials(const tinygltf::Model& srcModel)
 		{
 			const tinygltf::Texture& texture = srcModel.textures[srcMaterial.pbrMetallicRoughness.baseColorTexture.index];
 			const tinygltf::Image& image = srcModel.images[texture.source];
-			loadTexture(image.uri.c_str());
+
+			#ifdef NDEBUG
+				std::string fullPath = "./Game/assets/" + std::string(image.uri.c_str());
+				loadTexture(fullPath.c_str());
+			#else
+				loadTexture(image.uri.c_str());
+			#endif
+			
 		}
 		else if (!srcMaterial.pbrMetallicRoughness.baseColorFactor.empty()) // colour
 		{
